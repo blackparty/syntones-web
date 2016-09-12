@@ -37,7 +37,8 @@ public class MainController {
 	@RequestMapping(value="/play",method=RequestMethod.GET)
 	public ModelAndView playSong(@HeaderParam("Range") String range){
 		ModelAndView mav = new ModelAndView("songInfo");
-		String audio = "D:/Our_Files1/Eric/School/Thesis/Syntones/Songs/Uploaded/50450/500700.mp3";
+		String audio = "C:/Users/Courtney Love/Desktop/Syntones/Songs/Uploaded/";
+		
 		File asset = new File(audio);
 		MediaResource rs = new MediaResource();
 		Response response = null;

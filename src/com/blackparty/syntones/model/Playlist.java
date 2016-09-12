@@ -35,6 +35,7 @@ public class Playlist {
 	@ManyToOne(optional = false)
 	@JoinColumn(referencedColumnName = "user_id")
 	private User user;
+
 	
 	@Transient
 	private List<Song> songList;

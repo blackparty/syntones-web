@@ -29,7 +29,7 @@ public class ArtistDAO {
 	
 	public Artist getArtist(String artistName){
 		Session session = sf.openSession();
-		Query query = session.createQuery("from 	 where artistName = :name");
+		Query query = session.createQuery("from Artist where artistName = :name");
 		query.setString("name", artistName);
 		Artist result = (Artist) query.uniqueResult();
 		return result;

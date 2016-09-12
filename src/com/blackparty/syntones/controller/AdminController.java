@@ -23,7 +23,9 @@ import com.blackparty.syntones.service.ArtistService;
 import com.blackparty.syntones.service.SongService;
 
 @Controller
+
 @RequestMapping("/admin")
+
 public class AdminController {
 	@Autowired
 	ArtistService as;
@@ -43,10 +45,11 @@ public class AdminController {
 			if (action.equals("read")) {
 				// read the mp3 file first..
 				// converting multipartfile into file
-				File file = new File(multiPartFile.getOriginalFilename());
+				System.out.println(multiPartFile.getOriginalFilename());
+				File file = new File("E:/deletables/"+multiPartFile.getOriginalFilename());
 				multiPartFile.transferTo(file);
 				System.out.println("file name: " + file.getName());
-				FileCopy fc = new FileCopy();
+				//FileCopy fc = new FileCopy();
 				Song song = null;
 				// boolean flag = fc.copyFileUsingFileStreams(file);
 				ID3Extractor id3 = new ID3Extractor();
