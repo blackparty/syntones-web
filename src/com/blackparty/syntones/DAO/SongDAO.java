@@ -14,8 +14,10 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.blackparty.syntones.core.Mp3Uploader;
 import com.blackparty.syntones.model.Artist;
+import com.blackparty.syntones.model.SearchModel;
 import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.service.ArtistService;
 
@@ -35,9 +37,11 @@ public class SongDAO {
 		//call mp3uploader to save a copy of the mp3 on the server side
 		long artistId = song.getArtist().getArtistId();
 		Mp3Uploader uploader = new Mp3Uploader();
-		uploader.upload(song.getFile(),songId,artistId);
+		String file = uploader.upload(song.getFile(),songId,artistId);
 		session.flush();
 		session.close();
+		
+		updateSong(songId, file);
 	}
 
 
@@ -69,6 +73,47 @@ public class SongDAO {
 		return songList;
 	}
 
+	public ArrayList<Song> fetchAllSong() throws Exception {
+		Session session = sf.openSession();
+		Query query = session.createQuery("from Song");
+		@SuppressWarnings("unchecked")
+		ArrayList<Song> songs = (ArrayList<Song>) query.list();
+		return songs;
+
+	}
+
+
+	public void updateAllSong(ArrayList<Song> songs) throws Exception {
+		Session session = sf.openSession();
+		for (Song song : songs) {
+			session.update(song);
+		}
+		session.flush();
+		session.close();
+	}
+
+	public ArrayList<Song> getSongs(ArrayList<SearchModel> sm) {
+		Session session = sf.openSession();
+		ArrayList<Song> songs = new ArrayList();
+		for (SearchModel model : sm) {
+			Query query = session.createQuery("from Song where songId=:id");
+			query.setLong("id", model.getId());
+			Song song = (Song) query.uniqueResult();
+			songs.add(song);
+		}
+		return songs;
+	}
 	
+	public void updateSong(long songId, String file){
+		Session session = sf.openSession();
+			Query query = session.createQuery("from Song where songId=:id");
+			query.setLong("id", songId);
+			Song song = (Song) query.uniqueResult();
+			song.setFilePath(file);
+			session.update(song);
+			session.flush();
+			session.close();
+			
+	}
 
 }
