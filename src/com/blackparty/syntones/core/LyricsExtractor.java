@@ -23,9 +23,8 @@ public class LyricsExtractor {
     
     public List<String> getSongLyrics( String band, String songTitle) throws IOException {
      List<String> lyrics= new ArrayList<String>();
-     String[] temp = songTitle.split("\\),\\(|\\)|\\(");
-     String tempTitle = temp[0].replace("'", "-").trim();
-     Document doc = Jsoup.connect(songLyricsURL+ "/"+band.replace(" ", "-").toLowerCase()+"/"+tempTitle.replace(" ", "-").toLowerCase()+"-lyrics/").get();
+    
+     Document doc = Jsoup.connect(songLyricsURL+ "/"+band.replace(" ", "-").toLowerCase()+"/"+songTitle.replace(" ", "-").toLowerCase()+"-lyrics/").get();
      String title = doc.title();
      System.out.println(title);
      Element p = doc.select("p.songLyricsV14").get(0);   
@@ -34,7 +33,6 @@ public class LyricsExtractor {
             lyrics.add(((TextNode)e).getWholeText());
           }     
       }
-
      return lyrics;
    }
 	

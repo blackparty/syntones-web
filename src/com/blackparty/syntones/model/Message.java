@@ -26,10 +26,6 @@ public class Message {
 		this.flag = flag;
 	}
 	
-	public Message(long counter,String message){
-		this.counter = counter;
-		this.message = message;
-	}
 	public Message(long counter, String message,boolean flag){
 		this.message = message;
 		this.counter = counter;

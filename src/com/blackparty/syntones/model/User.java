@@ -29,7 +29,7 @@ public class User {
 
 	@Column(name = "gender")
 	private String gender;
-	
+
 	@Column(name = "date_of_birth")
 	private String dateOfBirth;
 
@@ -77,13 +77,14 @@ public class User {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	public String getGender() {
 		return gender;
 	}
 
 	public void setGender(String gender) {
 		this.gender = gender;
+
 	}
 
 	public String getDateOfBirth() {
@@ -94,9 +95,11 @@ public class User {
 		this.dateOfBirth = dateOfBirth;
 	}
 
+
+
 	@Override
 	public String toString() {
-		return "User [userId=" + userId + ", username=" + username + ", password=" + password + ", email=" + email + ", gender=" + gender + ", date_of_birth=" + dateOfBirth +"]";
+		return "User [userId=" + userId + ", password=" + password + ", username=" + username + ", email=" + email + ", gender=" + gender + ", date_of_birth=" + dateOfBirth +"]";
 	}
 
 }

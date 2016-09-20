@@ -3,14 +3,19 @@ package com.blackparty.syntones.model;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -40,40 +45,27 @@ public class Song {
 
 	@Transient
 	private File file;
-	
+
 	// connects the song to the artist class
 
 	@ManyToOne(optional = false)
 	@JoinColumn(referencedColumnName = "artist_id")
 	private Artist artist;
-	
-	//private long artistID;
-	
-	@Column(name = "lyrics",columnDefinition = "text")
+
+	@Column(name = "lyrics", columnDefinition = "text")
 	private String lyrics = "";
-	
+
 	@Column(name = "file_path")
 	private String filePath;
-	
-	@Column(name = "vector_space", columnDefinition ="text")
-	private String vectorSpace;
-	
-	public String getVectorSpace() {
-		return vectorSpace;
-	}
-
-	public void setVectorSpace(String vectorSpace) {
-		this.vectorSpace = vectorSpace;
-	}
 
 	public Song() {
 
 	}
-	
-	public void setFile(File file){
+
+	public void setFile(File file) {
 		this.file = file;
 	}
-	
+
 	public void setLyrics(List<String> lyrics) {
 		// adding nextline tag
 		for (int i = 0; i < lyrics.size(); i++) {
@@ -138,14 +130,20 @@ public class Song {
 		this.lyrics = lyrics;
 	}
 
-	public File getFile(){
+	public File getFile() {
 		return file;
 	}
 
+	public void setSongId(long songId) {
+		this.songId = songId;
+	}
+	public String displayTitleAndArtist(){
+		return "Song[Song Title: "+songTitle+", Artist: "+artistName+" ]";
+	}
+	
 	@Override
 	public String toString() {
-		return "Song [songTitle=" + songTitle + ", artistName=" + artistName + "]";
+		return "Song [songId=" + songId + ", songTitle=" + songTitle + ", artist= " + artistName + "]";
 	}
-
 
 }

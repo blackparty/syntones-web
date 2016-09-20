@@ -33,8 +33,7 @@ public class TrackSearcher {
             URL url = new URL(searchTrack);
             URLConnection urlc = url.openConnection();
             urlc.setDoOutput(true);
-            BufferedReader br = new BufferedReader(new InputStreamReader(urlc
-                    .getInputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
             String l = null;
             String result = "";
             while ((l = br.readLine()) != null) {
@@ -50,7 +49,7 @@ public class TrackSearcher {
 
             ArrayList<Song> songList = new ArrayList<Song>();
 
-            //System.out.println("TRACK MATCHES\n"+y);
+            System.out.println("TRACK MATCHES\n"+y);
             //parsing
             LinkedList<String> curlyBraceList = new LinkedList<String>();
             LinkedList<String> squareBracketList = new LinkedList<String>();
@@ -92,7 +91,7 @@ public class TrackSearcher {
                     resultName = json.get("artist").toString();
                     resultSong = json.get("name").toString();
                     Song s = new Song(resultSong,resultName);
-                    //System.out.println(s.toString());
+                    System.out.println(s.toString());
                     songList.add(s);
                     item = "";
                     counter++;
@@ -126,7 +125,6 @@ public class TrackSearcher {
 
         } catch (NoSuchElementException e) {
             //nothing to do here yet. mag exceptin tungod kay ang linkedlist na hurot samtang nag "pop" siya..
-
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
