@@ -22,37 +22,44 @@ public class Artist {
 	@Column(name="artist_name")
 	private String artistName;
 	
+	@Column(name="vector_space")
+	private String vectorSpace;
 	
-	public Artist() {
-		super();
-	}
 
-	public Artist(long artistId, String artistName) {
-		super();
-		this.artistId = artistId;
+	public Artist(){
+		
+	}
+	
+
+	public Artist(String artistName){
 		this.artistName = artistName;
 	}
-
 	public long getArtistId() {
 		return artistId;
-	}
-
-	public void setArtistId(long artistId) {
-		this.artistId = artistId;
 	}
 
 	public String getArtistName() {
 		return artistName;
 	}
 
+	public String getVectorSpace() {
+		return vectorSpace;
+	}
+
+
+	public void setVectorSpace(String vectorSpace) {
+		this.vectorSpace = vectorSpace;
+	}
+
+
+	public void setArtistId(long artistId) {
+		this.artistId = artistId;
+	}
+
+
 	public void setArtistName(String artistName) {
 		this.artistName = artistName;
 	}
 
-	@Override
-	public String toString() {
-		return "Artist [artistId=" + artistId + ", artistName=" + artistName + "]";
-	}
-	
-	
+
 }

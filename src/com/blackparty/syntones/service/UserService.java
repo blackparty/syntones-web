@@ -11,38 +11,23 @@ import com.blackparty.syntones.model.User;
 public class UserService {
 	@Autowired
 	private UserDAO userDAO;
-
-	public Message addUser(User user) throws Exception {
+	
+	public Message addUser(User user)throws Exception{
 		Message message = userDAO.addUser(user);
 		return message;
 	}
-
-	public User getUser(User user) throws Exception {
+	
+	public User getUser(User user)throws Exception{
 		User userResult = userDAO.getUser(user);
 		return userResult;
 	}
-
-	public Message authenticateUser(User user) throws Exception {
-		User fetchedUser;
-		Message message = new Message();
+	
+	public User authenticateUser(User user) throws Exception{
+		User fetchedUser = null;
 		fetchedUser = getUser(user);
-		String m = "";
-		if (fetchedUser != null) {
-			if (!fetchedUser.getPassword().equals(user.getPassword())) {
-				m = "password is not correct.";
-				System.out.println(m);
-				message.setMessage(m);
-				message.setFlag(false);
-				return message;
-			}
-		} else {
-			m = user.getUsername()+" does not exists.";
-			System.out.println(m);
-			message.setMessage(m);
-			message.setFlag(false);
-			return message;
+		if(!fetchedUser.getPassword().equals(user.getPassword())){
+			fetchedUser = null;
 		}
-		message.setFlag(true);
-		return message;
+		return fetchedUser;
 	}
 }

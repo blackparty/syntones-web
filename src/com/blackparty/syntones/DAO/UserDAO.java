@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.blackparty.syntones.model.Message;
 import com.blackparty.syntones.model.User;
 
@@ -27,30 +28,19 @@ public class UserDAO {
 			session.flush();
 			session.close();
 			message.setFlag(true);
-			message.setMessage(user.getUsername()+" is succesfully added.");
 		} else {
 			message.setMessage("username is already existed.");
 			message.setFlag(false);
 		}
 		return message;
 	}
-	
-	public User getUser(User user) throws Exception {
-		System.out.println("Fetching personal information of :"+user.getUsername());
-		Session session = sf.openSession();	
+
+	public User getUser(User query) throws Exception {
+		Session session = sf.openSession();
 		Query q = session.createQuery("from User where username = :name");
-		q.setString("name", user.getUsername());
+		q.setString("name", query.getUsername());
 		User fetchedUser = (User) q.uniqueResult();
-
-		if(fetchedUser == null){
-			return null;
-		}
-		session.flush();
-		session.close();
-
-		System.out.println("Unique result :"+fetchedUser.toString());
-
-
+		
 		return fetchedUser;
 	}
 }

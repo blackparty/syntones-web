@@ -5,17 +5,16 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-
-import java.util.List;
-
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.blackparty.syntones.core.Mp3Uploader;
 import com.blackparty.syntones.model.Artist;
+import com.blackparty.syntones.model.SearchModel;
 import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.service.ArtistService;
 
@@ -25,50 +24,66 @@ public class SongDAO {
 	@Autowired private SessionFactory sf;
 	@Autowired private ArtistService as;
 	
-
+	
 	
 	public void addSong(Song song)throws Exception{
 		Session session = sf.openSession();
 		Artist fetchedArtist =  as.getArtist(song.getArtistName());
 		song.setArtist(fetchedArtist);
 		long songId = (Long)session.save(song);
+		
+		
 		//call mp3uploader to save a copy of the mp3 on the server side
 		long artistId = song.getArtist().getArtistId();
 		Mp3Uploader uploader = new Mp3Uploader();
-		uploader.upload(song.getFile(),songId,artistId);
+		String file = uploader.upload(song.getFile(),songId,artistId);
+		
 		session.flush();
 		session.close();
+		
+		updateSong(songId, file);
 	}
-
-
-	public List<Song> getAllSongsFromDb(){
+	
+	public ArrayList<Song> fetchAllSong() throws Exception {
 		Session session = sf.openSession();
 		Query query = session.createQuery("from Song");
-		return query.list();
-		
+		@SuppressWarnings("unchecked")
+		ArrayList<Song> songs = (ArrayList<Song>) query.list();
+		return songs;
+
 	}
 
-
-	public Song getSong(long songId)throws Exception{
+	public void updateAllSong(ArrayList<Song> songs) throws Exception {
 		Session session = sf.openSession();
-		Query q = session.createQuery("from Song where song_id =:id");
-		q.setLong("id", songId);
-		Song song = (Song)q.uniqueResult();
-		System.out.println("song query: "+song.toString());
+		for (Song song : songs) {
+			session.update(song);
+		}
 		session.flush();
 		session.close();
-		return song;
 	}
-	
-	public List<Song> getAllSongs() throws Exception{
+
+	public ArrayList<Song> getSongs(ArrayList<SearchModel> sm) {
 		Session session = sf.openSession();
-		Query q = session.createQuery("from Song");
-		List<Song> songList = q.list();
-		session.flush();
-		session.close();
-		return songList;
+		ArrayList<Song> songs = new ArrayList();
+		for (SearchModel model : sm) {
+			Query query = session.createQuery("from Song where songId=:id");
+			query.setLong("id", model.getId());
+			Song song = (Song) query.uniqueResult();
+			songs.add(song);
+		}
+		return songs;
 	}
-
 	
-
+	public void updateSong(long songId, String file){
+		Session session = sf.openSession();
+			Query query = session.createQuery("from Song where songId=:id");
+			query.setLong("id", songId);
+			Song song = (Song) query.uniqueResult();
+			song.setFilePath(file);
+			session.update(song);
+			session.flush();
+			session.close();
+			
+	}
+	
 }
