@@ -27,7 +27,7 @@ public class SongDAO {
 	
 
 	
-	public void addSong(Song song)throws Exception{
+	public long addSong(Song song)throws Exception{
 		Session session = sf.openSession();
 		Artist fetchedArtist =  as.getArtist(song.getArtistName());
 		song.setArtist(fetchedArtist);
@@ -38,6 +38,7 @@ public class SongDAO {
 		uploader.upload(song.getFile(),songId,artistId);
 		session.flush();
 		session.close();
+		return songId;
 	}
 
 

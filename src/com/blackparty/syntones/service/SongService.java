@@ -22,8 +22,8 @@ public class SongService {
 	private SongDAO songDao;
 	
 	
-	public void addSong(Song song) throws Exception{
-		songDao.addSong(song);
+	public long addSong(Song song) throws Exception{
+		return songDao.addSong(song);
 	}
 
 

@@ -13,7 +13,7 @@ public class ID3Extractor {
 		
 	}
 	public Song readTags(String filePath)throws Exception{
-		Song song = null;
+		Song song = new Song();
 		System.out.println("Reading tags on the file.");
 		Mp3File mp3file = new Mp3File(filePath);
 		if (mp3file.hasId3v2Tag()) {
@@ -26,8 +26,11 @@ public class ID3Extractor {
             System.out.println("Year: " + id3v1Tag.getYear());
             System.out.println("Genre: " + id3v1Tag.getGenre() + " (" + id3v1Tag.getGenreDescription() + ")");
             System.out.println("Comment: " + id3v1Tag.getComment());
-            song = new Song(id3v1Tag.getTitle(),id3v1Tag.getArtist());
+            song.setArtistName(id3v1Tag.getArtist());
+            song.setSongTitle(id3v1Tag.getTitle());
         } else {
+        	song.setArtistName(null);
+        	song.setSongTitle(null);
             System.out.println("cant read any tags on the given file.");
         }
 		return song;

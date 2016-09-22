@@ -24,15 +24,19 @@ import com.blackparty.syntones.model.Message;
 import com.blackparty.syntones.model.Playlist;
 import com.blackparty.syntones.model.PlaylistSong;
 import com.blackparty.syntones.model.Song;
+import com.blackparty.syntones.model.Tag;
 import com.blackparty.syntones.response.LibraryResponse;
 import com.blackparty.syntones.response.ListenResponse;
 import com.blackparty.syntones.response.PlaylistResponse;
 import com.blackparty.syntones.response.PlaylistSongsResponse;
 import com.blackparty.syntones.response.RemovePlaylistResponse;
 import com.blackparty.syntones.response.RemoveToPlaylistResponse;
+import com.blackparty.syntones.response.TagsResponse;
 import com.blackparty.syntones.service.PlaylistService;
 import com.blackparty.syntones.service.PlaylistSongService;
 import com.blackparty.syntones.service.SongService;
+import com.blackparty.syntones.service.TagService;
+import com.sun.media.rtsp.protocol.Request;
 
  
 @RestController
@@ -41,6 +45,31 @@ public class MusicEndpoint {
 	@Autowired private SongService songService; 
 	@Autowired private PlaylistService playlistService;
 	@Autowired private PlaylistSongService playlistSongService;
+	@Autowired private TagService tagService;
+	
+	
+	
+	@RequestMapping(value="/getAllTags",produces = MediaType.APPLICATION_JSON_VALUE,method = RequestMethod.GET)
+	public TagsResponse getAllTags(){
+		TagsResponse tagResponse = new TagsResponse();
+		List<Tag> tags = null;
+		Message message  = new Message();
+		try{
+			tags = tagService.getAllTags();
+		}catch(Exception e){
+			e.printStackTrace();
+			message.setMessage("Exception occured on the webservice");
+			message.setFlag(false);
+			tagResponse.setMessage(message);
+			return tagResponse;
+		}
+		tagResponse.setTags(tags);
+		message.setFlag(true);
+		tagResponse.setMessage(message);
+		return tagResponse;
+	}
+	
+	
 	
 	@RequestMapping(value="/removePlaylist")
 	public RemovePlaylistResponse removePlaylist(@RequestBody Playlist playlist){
@@ -106,6 +135,7 @@ public class MusicEndpoint {
 		playlistResponse.setMessage(message);
 		return playlistResponse;
 	}
+	
 	
 	@RequestMapping(value="/removeToPlaylist",
 			produces=MediaType.APPLICATION_JSON_VALUE,

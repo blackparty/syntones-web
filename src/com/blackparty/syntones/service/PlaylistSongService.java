@@ -19,6 +19,7 @@ public class PlaylistSongService {
 	public void addToplaylist(PlaylistSong playlistSong) throws Exception{
 		playlistSongDao.addToplaylist(playlistSong);
 	}
+	
 	public List<Song> getSongs(long playlistId) throws Exception{
 		return playlistSongDao.getSongs(playlistId);
 	}

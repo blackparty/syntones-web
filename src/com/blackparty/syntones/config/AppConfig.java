@@ -17,34 +17,34 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "com.blackparty.syntones.*")
-public class AppConfig extends WebMvcConfigurerAdapter{
+public class AppConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
-	public ViewResolver viewResolver(){
-		 InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-	        viewResolver.setViewClass(JstlView.class);
-	        viewResolver.setPrefix("/WEB-INF/views/");
-	        viewResolver.setSuffix(".jsp");
-	        return viewResolver;
+	public ViewResolver viewResolver() {
+		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+		viewResolver.setViewClass(JstlView.class);
+		viewResolver.setPrefix("/WEB-INF/views/");
+		viewResolver.setSuffix(".jsp");
+		return viewResolver;
 	}
-	
+
 	@Override
-	public void addResourceHandlers(final ResourceHandlerRegistry registry){
+	public void addResourceHandlers(final ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
 	}
-	
-	 @Bean
-	    public MessageSource messageSource() {
-	        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-	        messageSource.setBasename("messages");
-	        return messageSource;
-	    }
-	
-	 @Bean
-	    public CommonsMultipartResolver multipartResolver(){
-	        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-	        multipartResolver.setMaxUploadSize(50000000);
-	        return multipartResolver;
-	    }
-	
+
+	@Bean
+	public MessageSource messageSource() {
+		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+		messageSource.setBasename("messages");
+		return messageSource;
+	}
+
+	@Bean
+	public CommonsMultipartResolver multipartResolver() {
+		CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+		multipartResolver.setMaxUploadSize(50000000);
+		return multipartResolver;
+	}
+
 }
