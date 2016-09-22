@@ -19,8 +19,11 @@
 <body>
 	<p>you are at the index page.</p>
 	<p>${system_message}</p>
-	<a href="addSongPage"><button>Add a song to the database</button></a>
-	<a href="songList"><button>Show list of songs in the database</button></a>
-	<a href="arRecom"><button>Association Rule</button></a>
+	<a href="addSongPage"><button>Add a song to the database</button></a><br>
+	<a href="songList"><button>Show list of songs in the database</button></a><br>
+	<a href="arRecom"><button>Association Rule</button></a><br>
+	<a href="startSummarize"><button>start summarize</button></a><br>
+	<a href="addNewTag"><button>add new tag</button></a>
+	<a href="commonWordsToDB"><button>save common words to DB</button></a>
 </body>
 </html>
