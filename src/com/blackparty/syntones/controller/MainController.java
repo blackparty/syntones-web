@@ -46,8 +46,6 @@ public class MainController {
 			SynonymResponse sResponse = gson.fromJson(response.getBody().toString(),SynonymResponse.class);
 			System.out.println("REESPOSNONER: "+sResponse.toString());
 			
-			
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
