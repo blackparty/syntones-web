@@ -160,6 +160,14 @@
             <scope>test</scope>
         </dependency>
 
+	<!-- https://mvnrepository.com/artifact/net.sf.jwordnet/jwnl -->
+		<dependency>
+			<groupId>net.sf.jwordnet</groupId>
+			<artifactId>jwnl</artifactId>
+			<version>1.4_rc3</version>
+		</dependency>
+
+
 	</dependencies>
 	<build>
 		<sourceDirectory>src</sourceDirectory>
