@@ -4,18 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import com.blackparty.syntones.model.SongLine;
+
 public class CompressionHashing {
 	private final String[] convertList = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
     private final int NUMBER_OF_ALPHABETS = 26;
     private ArrayList<String> hashedLines = new ArrayList<>();
 
-    public List<String> hash(List<String> lyrics) {
-        for (String line : lyrics) {
-            if(line.length() == 0){
+    public List<String> hash(List<SongLine> lyrics) {
+       
+    	
+    	for (SongLine line : lyrics) {
+            if(line.getLine().length() == 0){
                 continue;
             }
             ArrayList<Integer> tempList = new ArrayList<>();
-            StringTokenizer token = new StringTokenizer(line);
+            StringTokenizer token = new StringTokenizer(line.getLine());
             while (token.hasMoreTokens()) {
                 String var = token.nextToken();
                 ArrayList<Integer> hashedWord = new ArrayList();

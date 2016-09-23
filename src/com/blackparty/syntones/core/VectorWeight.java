@@ -35,9 +35,9 @@ public class VectorWeight {
 	            for (int j = 0; j < hashedLines.size(); j++) {
 	                float result = (float) (maxLenMatrix[i][j] - ldMatrix[i][j]) / maxLenMatrix[i][j];
 	                levenshteinSimilartyWeight[i][j] = result;
-	                System.out.printf("%.2f ",result);
+	                //System.out.printf("%.2f ",result);
 	            }
-	             System.out.println("");
+	            // System.out.println("");
 	        }
 	        return levenshteinSimilartyWeight;
 	    }
@@ -53,9 +53,9 @@ public class VectorWeight {
 	                    temp = hashedLines.get(j).length();
 	                }
 	                maxLenMatrix[i][j] = temp;
-	                 System.out.print(temp + " ");
+	                 //System.out.print(temp + " ");
 	            }
-	            System.out.println("");
+	           // System.out.println("");
 	        }
 
 	        return maxLenMatrix;
@@ -68,9 +68,9 @@ public class VectorWeight {
 	            for (int j = 0; j < hashedLines.size(); j++) {
 	                int t = StringUtils.getLevenshteinDistance(hashedLines.get(i), hashedLines.get(j));
 	                ldMatrix[i][j] = t;
-	                System.out.print(t + " ");
+	                //System.out.print(t + " ");
 	            }
-	            System.out.println("");
+	            //System.out.println("");
 	        }
 	        return ldMatrix;
 	    }

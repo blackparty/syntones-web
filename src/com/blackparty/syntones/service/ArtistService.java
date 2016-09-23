@@ -1,5 +1,7 @@
 package com.blackparty.syntones.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,11 @@ public class ArtistService {
 
 	@Autowired
 	private ArtistDAO artistDAO;
+	
+	
+	public List<Artist> getAllArtists()throws Exception{
+		return artistDAO.getAllArtist();
+	}
 	
 	public void addArtist(Artist artist){
 		Artist fetchedArtist = getArtist(artist.getArtistName());

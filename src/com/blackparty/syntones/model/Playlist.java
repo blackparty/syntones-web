@@ -31,6 +31,9 @@ public class Playlist {
 	@Transient
 	private List<Song> songs;
 	
+	@Transient
+	private long[] songIds;
+	
 	@ManyToOne(optional = false)
 	@JoinColumn(referencedColumnName = "user_id")
 	private User user;
@@ -105,6 +108,18 @@ public class Playlist {
 
 	public void setSongs(List<Song> songs) {
 		this.songs = songs;
+	}
+
+	
+	
+	
+	
+	public long[] getSongIds() {
+		return songIds;
+	}
+
+	public void setSongIds(long[] songIds) {
+		this.songIds = songIds;
 	}
 
 	@Override

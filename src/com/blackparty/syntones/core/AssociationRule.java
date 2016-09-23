@@ -45,16 +45,15 @@ public class AssociationRule {
 
 	}
 
-	public static ArrayList<String> getUniqueSessions(List<PlayedSongs> played_songs_list) {
-		ArrayList<String> session_id_list = new ArrayList<>();
+	public static ArrayList<Long> getUniqueSessions(List<PlayedSongs> played_songs_list) {
+		ArrayList<Long> session_id_list = new ArrayList<>();
 
 		for (int a = 0; a < played_songs_list.size(); a++) {
-			session_id_list.add(played_songs_list.get(a).getUser_id());
-
+			session_id_list.add(played_songs_list.get(a).getSession_id());
 
 		}
 
-		Set<String> hs = new HashSet<>();
+		Set<Long> hs = new HashSet<>();
 		hs.addAll(session_id_list);
 		session_id_list.clear();
 		session_id_list.addAll(hs);
@@ -64,36 +63,36 @@ public class AssociationRule {
 		return session_id_list;
 	}
 
-	public static int[][] getOneItemBasket(List<PlayedSongs> played_songs_list, ArrayList<String> session_id_list,
+	public static int[][] getOneItemBasket(List<PlayedSongs> played_songs_list, ArrayList<Long> session_id_list,
 			ArrayList<String> track_id_list) {
 		int row = track_id_list.size(), col = session_id_list.size();
 		int[][] basket = new int[row][col];
 		String track = null;
-		String session;
+		Long session;
 
 		for (row = 0; row < track_id_list.size(); row++) {
 			for (col = 0; col < session_id_list.size(); col++) {
 
 				for (int a = 0; a < played_songs_list.size(); a++) {
 					track = played_songs_list.get(a).getTrack_id();
-					session = played_songs_list.get(a).getUser_id();
+					session = played_songs_list.get(a).getSession_id();
 
-					if (session.equals(session_id_list.get(col))) {
+					if (session == session_id_list.get(col)) {
 						if (track.equals(track_id_list.get(row))) {
 							basket[row][col] = 1;
 						}
 					}
 				}
-//				System.out.print("\t" + basket[row][col]);
+				System.out.print("\t" + basket[row][col]);
 
 			}
-//			System.out.println();
+			System.out.println();
 		}
 		return basket;
 
 	}
 
-	public ArrayList<OneItemSetCount> getOneItemCount(ArrayList<String> session_id_list, int[][] oneItemBasket,
+	public ArrayList<OneItemSetCount> getOneItemCount(ArrayList<Long> session_id_list, int[][] oneItemBasket,
 			List<PlayedSongs> played_songs_list, ArrayList<String> track_id_list) throws SQLException {
 		int row = track_id_list.size(), col = session_id_list.size(), sum = 0;
 		ArrayList<OneItemSetCount> one_item_set_count_list = new ArrayList<>();
@@ -108,7 +107,6 @@ public class AssociationRule {
 			one_item_set_count_list.add(one_item_set_count);
 			sum = 0;
 		}
-		
 		return one_item_set_count_list;
 
 	}
@@ -174,12 +172,12 @@ public class AssociationRule {
 	}
 
 	public static int[][] getTwoItemBasket(ArrayList<TwoItemSetCombo> played_two_item_combo_list, int[][] oneItemBasket,
-			ArrayList<String> track_id_list, ArrayList<String> session_id_list) {
+			ArrayList<String> track_id_list, ArrayList<Long> session_id_list) {
 
 		ArrayList<PlayedTwoItemSet> two_item_combo_tracks_list = new ArrayList<>();
 		String[] two_item_tracks;
 		String twoItem_track = null;
-		String twoItem_session;
+		Long twoItem_session;
 		int row_tItem = played_two_item_combo_list.size(), col_tItem = session_id_list.size();
 		int[][] twoItemBasket = new int[row_tItem][col_tItem];
 		int row = track_id_list.size(), col = session_id_list.size();
@@ -206,7 +204,7 @@ public class AssociationRule {
 										PlayedTwoItemSet played_two_item_set_list = new PlayedTwoItemSet();
 										played_two_item_set_list
 												.setCombination(two_item_tracks[0] + "," + two_item_tracks[1]);
-										played_two_item_set_list.setUser_id(session_id_list.get(col));
+										played_two_item_set_list.setSession_id(session_id_list.get(col));
 										two_item_combo_tracks_list.add(played_two_item_set_list);
 
 										// twoItemBasket[row_tItem][col_tItem] =
@@ -229,7 +227,7 @@ public class AssociationRule {
 				for (int a = 0; a < two_item_combo_tracks_list.size(); a++) {
 
 					twoItem_track = two_item_combo_tracks_list.get(a).getCombination();
-					twoItem_session = two_item_combo_tracks_list.get(a).getUser_id();
+					twoItem_session = two_item_combo_tracks_list.get(a).getSession_id();
 
 					if (twoItem_track.equals(played_two_item_combo_list.get(row_tItem).getCombination())) {
 						// System.out.println(twoItem_track + " - " +
@@ -237,24 +235,24 @@ public class AssociationRule {
 						// +
 						// played_two_item_combo_list.get(row_tItem).getCombination());
 
-						if (twoItem_session.equals(session_id_list.get(col_tItem))) {
+						if (twoItem_session == session_id_list.get(col_tItem)) {
 							twoItemBasket[row_tItem][col_tItem] = 1;
 						}
 
 					}
 				}
 
-//				 System.out.print("\t" + twoItemBasket[row_tItem][col_tItem]);
+				// System.out.print("\t" + twoItemBasket[row_tItem][col_tItem]);
 			}
 
-//			 System.out.println();
+			// System.out.println();
 		}
 		return twoItemBasket;
 	}
 
 	public ArrayList<TwoItemSet> getTwoItemSet(ArrayList<OneItemSetCount> one_item_set_count_list,
 			ArrayList<String> track_id_list, int[][] twoItemBasket,
-			ArrayList<TwoItemSetCombo> played_two_item_combo_list, ArrayList<String> session_id_list)
+			ArrayList<TwoItemSetCombo> played_two_item_combo_list, ArrayList<Long> session_id_list)
 			throws SQLException {
 
 		int row_tItem = played_two_item_combo_list.size(), col_tItem = session_id_list.size(), sum = 0;
@@ -308,12 +306,12 @@ public class AssociationRule {
 
 	public static int[][] getThreeItemBasket(int[][] oneItemBasket, ArrayList<String> track_id_list,
 			ArrayList<ThreeItemSetCombo> three_item_combo_list, int[][] twoItemBasket,
-			ArrayList<TwoItemSetCombo> played_two_item_combo_list, ArrayList<String> session_id_list) {
+			ArrayList<TwoItemSetCombo> played_two_item_combo_list, ArrayList<Long> session_id_list) {
 
 		ArrayList<PlayedThreeItemSet> three_item_combo_tracks_list = new ArrayList<>();
 		String[] three_item_tracks, two_item_tracks, two_item_tracks1;
 		String threeItem_track = null;
-		String threeItem_session;
+		Long threeItem_session;
 		int row_tItem = three_item_combo_list.size(), col_tItem = session_id_list.size();
 		int[][] threeItemBasket = new int[row_tItem][col_tItem];
 		int row = played_two_item_combo_list.size(), col = session_id_list.size();
@@ -341,7 +339,7 @@ public class AssociationRule {
 											PlayedThreeItemSet played_three_item_set_list = new PlayedThreeItemSet();
 											played_three_item_set_list.setCombination(three_item_tracks[0] + ","
 													+ three_item_tracks[1] + "," + three_item_tracks[2]);
-											played_three_item_set_list.setUser_id(session_id_list.get(col));
+											played_three_item_set_list.setSession_id(session_id_list.get(col));
 											three_item_combo_tracks_list.add(played_three_item_set_list);
 										}
 
@@ -364,7 +362,7 @@ public class AssociationRule {
 				for (int a = 0; a < three_item_combo_tracks_list.size(); a++) {
 
 					threeItem_track = three_item_combo_tracks_list.get(a).getCombination();
-					threeItem_session = three_item_combo_tracks_list.get(a).getUser_id();
+					threeItem_session = three_item_combo_tracks_list.get(a).getSession_id();
 
 					if (threeItem_track.equals(three_item_combo_list.get(row_tItem).getTrack_id())) {
 
@@ -375,16 +373,17 @@ public class AssociationRule {
 					}
 				}
 
-//				 System.out.print("\t" + threeItemBasket[row_tItem][col_tItem]);
+				// System.out.print("\t" +
+				// threeItemBasket[row_tItem][col_tItem]);
 			}
 
-//			 System.out.println();
+			// System.out.println();
 		}
 		return threeItemBasket;
 	}
 
 	public static ArrayList<ThreeItemSet> getThreeItemSet(ArrayList<ThreeItemSetCombo> three_item_set_combo_list,
-			ArrayList<TwoItemSet> two_item_set_list, int[][] threeItemBasket, ArrayList<String> session_id_list)
+			ArrayList<TwoItemSet> two_item_set_list, int[][] threeItemBasket, ArrayList<Long> session_id_list)
 			throws SQLException {
 
 		int row_tItem = three_item_set_combo_list.size(), col_tItem = session_id_list.size(), sum = 0;

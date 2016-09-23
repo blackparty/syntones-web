@@ -6,6 +6,8 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.StatelessSession;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,16 @@ public class PlaylistSongDAO {
 		session.close();
 	}
 	
+	
+	public void savebatchPlaylistSong(List<PlaylistSong> songs)throws Exception{
+		StatelessSession session = sessionFactory.openStatelessSession();
+		Transaction trans = session.beginTransaction();
+		for(PlaylistSong ps:songs){
+			session.insert(ps);
+		}
+		trans.commit();
+		session.close();
+	}
 	
 	public void removePlaylist(Playlist playlist){
 		Session session = sessionFactory.openSession();

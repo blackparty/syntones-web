@@ -14,6 +14,7 @@ import java.util.TreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackparty.syntones.model.CommonWord;
+import com.blackparty.syntones.model.SongLine;
 import com.blackparty.syntones.service.CommonWordService;
 
 public class SentenceWeight {
@@ -24,12 +25,12 @@ public class SentenceWeight {
 	    public SentenceWeight() {
 	    }
 
-	    public Map<String, Integer> wordCount(List<String> songLyrics) throws FileNotFoundException, IOException, Exception {
+	    public Map<String, Integer> wordCount(List<SongLine> songLyrics) throws FileNotFoundException, IOException, Exception {
 	        System.out.println("Running word count..");
 	        HashMap<String, Integer> wordMap = new HashMap<String, Integer>();
 	        String word;
-	        for (String s : songLyrics) {
-	            StringTokenizer st = new StringTokenizer(s);
+	        for (SongLine s : songLyrics) {
+	            StringTokenizer st = new StringTokenizer(s.getLine());
 	            while (st.hasMoreTokens()) {
 	                word = st.nextToken();
 	                word = word.toLowerCase();
@@ -57,7 +58,6 @@ public class SentenceWeight {
 	        while (iterator.hasNext()) {
 	            Map.Entry entry = (Map.Entry) iterator.next();
 	            System.out.println("> " + entry.getKey() + "\t\t\t" + entry.getValue());
-	           
 	            counter = counter + (int) entry.getValue();
 	            //couter++;
 	        }
@@ -66,19 +66,19 @@ public class SentenceWeight {
 	        return wordMap;
 	    }
 
-	    public ArrayList<Float> getSentenceWeight(List<String> songLyrics, Map<String, Integer> wordMap) {
+	    public ArrayList<Float> getSentenceWeight(List<SongLine> songLyrics, Map<String, Integer> wordMap) {
 	        System.out.println("Calculting sentence weight.");
 	        ArrayList<Float> sentenceWeight = new ArrayList<>();
 	        double sum = 0;
 	      
-	        for (String line : songLyrics) {
+	        for (SongLine line : songLyrics) {
 	            ArrayList<Float> affinityWeight = null;
-	            if (line.length() == 0) {
+	            if (line.getLine().length() == 0) {
 	                System.out.println("hit!");
 	                continue;
 	            }
 	            System.out.println(line);
-	            affinityWeight = getAffinityWeight(line, wordMap);
+	            affinityWeight = getAffinityWeight(line.getLine(), wordMap);
 	            for (float s : affinityWeight) {
 	                sum = (sum + s);
 	            }
@@ -91,6 +91,9 @@ public class SentenceWeight {
 	        }
 	        return sentenceWeight;
 	    }
+	    
+	    
+	    
 	    public ArrayList<Float> getAffinityWeight(String line, Map<String, Integer> wordMap) {
 	        ArrayList<Float> affinityWeight = new ArrayList<>();
 	        StringTokenizer stringTokenizer = new StringTokenizer(line);
@@ -104,9 +107,7 @@ public class SentenceWeight {
 	            System.out.println(aWeight);
 	            affinityWeight.add(aWeight);
 	        }
-
 	        double sum = 0;
-
 	        for (double a : affinityWeight) {
 	            sum = sum + a;
 	        }

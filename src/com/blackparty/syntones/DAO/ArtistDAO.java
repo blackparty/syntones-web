@@ -2,6 +2,8 @@ package com.blackparty.syntones.DAO;
 
 
 
+import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -19,6 +21,16 @@ public class ArtistDAO {
 
 	@Autowired
 	private SessionFactory sf;
+	
+	
+	public List<Artist> getAllArtist()throws Exception{
+		Session session = sf.openSession();
+		Query query = session.createQuery("from Artist");
+		List<Artist> artists = query.list();
+		session.flush();
+		session.close();
+		return artists;
+	}
 	
 	public void addArtist(Artist artist){
 		Session session = sf.openSession();

@@ -2,6 +2,7 @@ package com.blackparty.syntones.controller;
 
 import java.io.File;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,29 +22,42 @@ import org.springframework.web.servlet.ModelAndView;
 import com.blackparty.syntones.core.ID3Extractor;
 import com.blackparty.syntones.core.LyricsExtractor;
 import com.blackparty.syntones.core.Summarize;
+import com.blackparty.syntones.core.Tagger;
 import com.blackparty.syntones.core.TrackSearcher;
 import com.blackparty.syntones.model.Artist;
 import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.model.SongLine;
+import com.blackparty.syntones.model.Tag;
+import com.blackparty.syntones.model.TagSong;
+import com.blackparty.syntones.model.TagSynonym;
 import com.blackparty.syntones.service.ArtistService;
 import com.blackparty.syntones.service.PlayedSongsService;
 import com.blackparty.syntones.service.SongLineService;
 import com.blackparty.syntones.service.SongService;
+import com.blackparty.syntones.service.TagService;
+import com.blackparty.syntones.service.TagSongService;
+import com.blackparty.syntones.service.TagSynonymService;
 
 @Controller
 @RequestMapping(value = "/admin")
 public class AddSongController {
 	@Autowired
 	private ArtistService as;
-
 	@Autowired
 	private SongService ss;
-
 	@Autowired
 	private PlayedSongsService playedSongsService;
-
 	@Autowired
 	private SongLineService songLineService;
+	@Autowired
+	private TagSynonymService tagSynonymService;
+	@Autowired
+	private TagSongService tagSongService;
+	@Autowired
+	private SongService songService;
+
+	@Autowired
+	private TagService tagService;
 
 	@RequestMapping(value = "/fetchLyrics")
 	public ModelAndView fetchLyrics(@RequestParam("songTitle") String songTitle,
@@ -53,16 +67,16 @@ public class AddSongController {
 		List<String> lyrics = null;
 		try {
 			lyrics = le.getSongLyrics(artistName, songTitle);
-		}catch(SocketTimeoutException timeout){
-			mav.addObject("system_message","timeoue exception, please click \"read\" again.");
+		} catch (SocketTimeoutException timeout) {
+			mav.addObject("system_message", "timeoue exception, please click \"read\" again.");
 			mav.setViewName("mp3Details");
 			mav.addObject("artistName", artistName);
 			mav.addObject("songTitle", songTitle);
 			return mav;
-		} 
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-			mav.addObject("system_message", "Cant find lyrics due to unknown artist / title. Please provide correct song details");
+			mav.addObject("system_message",
+					"Cant find lyrics due to unknown artist / title. Please provide correct song details");
 			mav.setViewName("askDetails");
 			return mav;
 		}
@@ -121,36 +135,50 @@ public class AddSongController {
 		song.setLyrics((List) request.getSession().getAttribute("lyrics"));
 		song.setFile((File) request.getSession().getAttribute("file"));
 		System.out.print("Saving song to the server...");
-		// save song to the database		
-		
+		// save song to the database
+
 		try {
+
 			long songId = ss.addSong(song);
 			song.setSongId(songId);
-			
-			//validating whether the song has been summarized or not
-			List<Long> songIdList = songLineService.getAllSongs();
-			boolean flag = false;
-			for(int j=0;j<songIdList.size();j++){
-				if(song.getSongId() == songIdList.get(j)){
-					flag = true;
-					break;
-				}
+
+			songLineService.truncateTable();
+			// rework global line ranking
+			List<Song> songList = songService.getAllSongsFromDb();
+			Summarize summarize = new Summarize();
+			ArrayList<SongLine> globalSongLine = new ArrayList();
+
+			List<SongLine> songLines = summarize.start(songList);
+			songLineService.saveBatchSongLines(songLines);
+			List<SongLine> finishedSongLine = songLineService.getAllLines();
+			System.out.println("FINISHED SONGLINE");
+			for (SongLine sl : finishedSongLine) {
+				System.out.println(sl.toString());
 			}
-			if(flag == false){
-				// get summarized data to the song.
-				Summarize summarize = new Summarize();
-				List<SongLine> songLines = summarize.start(song);
-				for(SongLine sl:songLines){
-					sl.setSong(song);
-					songLineService.addSongLine(sl);
-				}
+
+			List<Tag> tags = tagService.getAllTags();
+			// gets its corresponding synonyms
+			for (int i = 0; i < tags.size(); i++) {
+				List<TagSynonym> synonyms = tagSynonymService.getTagSynonym(tags.get(i).getId());
+				tags.get(i).setSynonyms(synonyms);
 			}
+			Tagger tagger = new Tagger();
+
+			List<TagSong> tagSong = tagger.start(song, tags);
+			for (TagSong ts : tagSong) {
+				System.out.println(ts.toString());
+			}
+			// save
+			tagSongService.saveBatchTagSong(tagSong);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 		HttpSession session = request.getSession();
 		session.invalidate();
 		MainController mc = new MainController();
+		System.out.println("song saved successfully.");
 		mav = mc.indexPage();
 		mav.addObject("system_message", "Song saved successfully.");
 		return mav;
@@ -161,7 +189,7 @@ public class AddSongController {
 		ModelAndView mav = new ModelAndView();
 		try {
 			System.out.println(multiPartFile.getOriginalFilename());
-			File file = new File("E:/deletables/" + multiPartFile.getOriginalFilename());
+			File file = new File("D:/deletables/" + multiPartFile.getOriginalFilename());
 			multiPartFile.transferTo(file);
 			System.out.println("file name: " + file.getName());
 			// FileCopy fc = new FileCopy();

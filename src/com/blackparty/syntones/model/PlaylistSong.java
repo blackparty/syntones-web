@@ -59,6 +59,11 @@ public class PlaylistSong {
 		this.user = user;
 	}
 
+	@Override
+	public String toString() {
+		return "PlaylistSong [id=" + id + ", songId=" + songId + ", playlistId=" + playlistId + ", user=" + user + "]";
+	}
+
 
 	
 	

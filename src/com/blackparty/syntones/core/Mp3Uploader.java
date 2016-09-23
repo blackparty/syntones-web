@@ -11,7 +11,7 @@ public class Mp3Uploader {
 	// gusto nato i-save ang uploaded mp3 file
 	// sa desktop nalang ni
 
-	private String uploadDirectory = "C:/Users/Courtney Love/Desktop/Syntones/Songs/Uploaded/";
+	private String uploadDirectory = "D:/Our_Files1/Eric/School/Thesis/Syntones/Songs/Uploaded/";
 
 	// code to save mp3 here...
 	public void upload(File file,long songId,long artistId) throws IOException{

@@ -149,10 +149,9 @@ public class AdminController {
 		System.out.println("AR - ADMIN CONTROLLER");
 
 		ArrayList<String> track_id_list = ar.getUniqueOneItemTracks(played_songs_list);
-		ArrayList<String> session_id_list = ar.getUniqueSessions(played_songs_list);
+		ArrayList<Long> session_id_list = ar.getUniqueSessions(played_songs_list);
 
 		int[][] oneItemBasket = ar.getOneItemBasket(played_songs_list, session_id_list, track_id_list);
-
 
 		ArrayList<OneItemSetCount> one_item_set_count_list = ar.getOneItemCount(session_id_list, oneItemBasket,
 				played_songs_list, track_id_list);
@@ -162,7 +161,6 @@ public class AdminController {
 //		}
 
 		ArrayList<TwoItemSetCombo> two_item_set_combo_list = ar.getTwoItemCombo(track_id_list);
-
 
 		int[][] twoItemBasket = ar.getTwoItemBasket(two_item_set_combo_list, oneItemBasket, track_id_list,
 				session_id_list);
@@ -175,37 +173,29 @@ public class AdminController {
 //		}
 
 		ArrayList<ThreeItemSetCombo> three_item_set_combo_list = ar.getThreeItemCombo(track_id_list);
-		
-
 		int[][] threeItemBasket = ar.getThreeItemBasket(oneItemBasket, track_id_list, three_item_set_combo_list,
 				twoItemBasket, two_item_set_combo_list, session_id_list);
-		
+
 		ArrayList<ThreeItemSet> three_item_set_list = ar.getThreeItemSet(three_item_set_combo_list, two_item_set_list,
 				threeItemBasket, session_id_list);
-		
-		for(ThreeItemSet s : three_item_set_list){
-			System.out.println(s.getCount());
-		}
-		
-//		playedSongsService.insertOneItemSetCount(one_item_set_count_list);
 
 //		if (playedSongsService.getThreeItemSet().isEmpty()) {
 //			playedSongsService.insertThreeItemSet(three_item_set_list);
 //		}
 
-//		ArrayList<TwoItemSetRecomSong> two_item_recom_song_list = ar.getTwoItemRecomSong(two_item_set_list);
-//		ArrayList<ThreeItemSetRecomSong> three_item_recom_song_list = ar.getThreeItemRecomSong(three_item_set_list);
-//
-//		System.out.println("TWO ITEM RECOM");
-//		for (TwoItemSetRecomSong a : two_item_recom_song_list) {
-//
-//			System.out.println(a.getRecom_song() + " - " + a.getConfidence());
-//		}
-//		System.out.println("\nTHREE ITEM RECOM");
-//		for (ThreeItemSetRecomSong b : three_item_recom_song_list) {
-//
-//			System.out.println(b.getRecom_song() + " - " + b.getConfidence());
-//		}
+		ArrayList<TwoItemSetRecomSong> two_item_recom_song_list = ar.getTwoItemRecomSong(two_item_set_list);
+		ArrayList<ThreeItemSetRecomSong> three_item_recom_song_list = ar.getThreeItemRecomSong(three_item_set_list);
+
+		System.out.println("TWO ITEM RECOM");
+		for (TwoItemSetRecomSong a : two_item_recom_song_list) {
+
+			System.out.println(a.getRecom_song() + " - " + a.getConfidence());
+		}
+		System.out.println("\nTHREE ITEM RECOM");
+		for (ThreeItemSetRecomSong b : three_item_recom_song_list) {
+
+			System.out.println(b.getRecom_song() + " - " + b.getConfidence());
+		}
 
 		return "index";
 

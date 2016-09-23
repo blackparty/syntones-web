@@ -12,14 +12,22 @@ import com.blackparty.syntones.model.SongLine;
 @Service
 public class SongLineService {
 	@Autowired private SongLineDAO songLineDao;
-	public void addSongLine(SongLine songLine){
+	
+	
+	public void truncateTable(){
+		songLineDao.truncateTable();
+	}
+	public void saveBatchSongLines(List<SongLine> songLines)throws Exception{
+		songLineDao.saveBatchSongLines(songLines);
+	}
+	public void addSongLine(SongLine songLine)throws Exception{
 		songLineDao.addSongLine(songLine);
 	}
-	public List<Long> getAllSongs(){
+	public List<Long> getAllSongs()throws Exception{
 		return songLineDao.getAllSongs();
 	}
 	
-	public List<String> getAllLines(){
+	public List<SongLine> getAllLines()throws Exception{
 		return songLineDao.getAllLines();
 	}
 }

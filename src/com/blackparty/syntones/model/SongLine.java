@@ -25,10 +25,8 @@ public class SongLine {
 	private String line;
 	@Column(name = "result")
 	private float result;
-
-	@ManyToOne(optional = false)
-	@JoinColumn(referencedColumnName = "song_id")
-	private Song song;
+	@Column(name ="song_id")
+	private long songId;
 
 	public SongLine() {
 	}
@@ -71,14 +69,21 @@ public class SongLine {
 		this.result = result;
 	}
 
-	public Song getSong() {
-		return song;
+
+	
+	public long getSongId() {
+		return songId;
 	}
 
-	public void setSong(Song song) {
-		this.song = song;
+	public void setSongId(long songId) {
+		this.songId = songId;
 	}
 
+	@Override
+	public String toString() {
+		return "SongLine [lineNumber=" + lineNumber + ", line=" + line + ", result=" + result + ", songId=" + songId
+				+ "]";
+	}
 	
 	
 	public float compareTo(SongLine compareSongLine) {
@@ -101,4 +106,7 @@ public class SongLine {
 
         }
     };
+	
+
+	
 }

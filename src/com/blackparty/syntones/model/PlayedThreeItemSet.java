@@ -2,16 +2,16 @@ package com.blackparty.syntones.model;
 
 public class PlayedThreeItemSet {
 	private String combination;
-	private String user_id;
+	private Long session_id;
 
 	public PlayedThreeItemSet() {
 		super();
 	}
 
-	public PlayedThreeItemSet(String combination, String user_id) {
+	public PlayedThreeItemSet(String combination, Long session_id) {
 		super();
 		this.combination = combination;
-		this.user_id = user_id;
+		this.session_id = session_id;
 	}
 
 	public String getCombination() {
@@ -22,12 +22,12 @@ public class PlayedThreeItemSet {
 		this.combination = combination;
 	}
 
-	public String getUser_id() {
-		return user_id;
+	public Long getSession_id() {
+		return session_id;
 	}
 
-	public void setUser_id(String user_id) {
-		this.user_id = user_id;
+	public void setSession_id(Long session_id) {
+		this.session_id = session_id;
 	}
 
 }

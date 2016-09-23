@@ -28,10 +28,6 @@
 							href="${pageContext.request.contextPath}/viewSong?id=${song.songId}">></a>
 					</button>
 				</td>
-				<td>					<button>
-						<a
-							href="${pageContext.request.contextPath}/viewSongLyrics?id=${song.songId}">></a>
-					</button></td>
 			</tr>
 		</c:forEach>
 	</table>

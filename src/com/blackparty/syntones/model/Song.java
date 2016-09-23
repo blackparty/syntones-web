@@ -142,8 +142,11 @@ public class Song {
 	}
 	
 	@Override
-	public String toString() {
+	public String toString(){
 		return "Song [songId=" + songId + ", songTitle=" + songTitle + ", artist= " + artistName + "]";
+	}
+	public String toStringFromDB() {
+		return "Song [songId=" + songId + ", songTitle=" + songTitle + ", artist= " + artist.getArtistName() + "]";
 	}
 
 }
