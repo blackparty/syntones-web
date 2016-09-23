@@ -26,7 +26,6 @@ public class Stemmer {
 
     public Stemmer() {
         try {
-        	//JWNL.initialize(Class<>);
         	//System.out.println("WORKING DIRECTORY: "+workingDir);
             JWNL.initialize(new FileInputStream(jwnlDirectory));
             dic = Dictionary.getInstance();

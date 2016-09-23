@@ -7,15 +7,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackparty.syntones.core.MediaResource;
+import com.blackparty.syntones.model.Artist;
 import com.blackparty.syntones.model.Message;
 import com.blackparty.syntones.model.Playlist;
 import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.model.User;
+import com.blackparty.syntones.response.ArtistResponse;
 import com.blackparty.syntones.response.LibraryResponse;
 import com.blackparty.syntones.response.PlaylistResponse;
 import com.blackparty.syntones.response.PlaylistSongsResponse;
 import com.blackparty.syntones.response.SearchResponse;
 import com.blackparty.syntones.response.SongListResponse;
+import com.blackparty.syntones.service.ArtistService;
 import com.blackparty.syntones.service.PlaylistService;
 import com.blackparty.syntones.service.PlaylistSongService;
 import com.blackparty.syntones.service.SongService;
@@ -49,6 +52,30 @@ public class NavigationEndpoint {
 	private PlaylistService playlistService;
 	@Autowired
 	private PlaylistSongService playlistSongService;
+	@Autowired private ArtistService artistService;
+
+	@RequestMapping(value="/getAllArtists",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ArtistResponse getAllArtist(){
+		System.out.println("Received request to get all artists");
+		ArtistResponse artistResponse = new ArtistResponse();
+		Message message = new Message();
+		try{
+			List<Artist> artists = artistService.getAllArtists();
+			artistResponse.setArtists(artists);
+			message.setFlag(true);
+		}catch(Exception e){
+			e.printStackTrace();
+			message.setFlag(false);
+			artistResponse.setMessage(message);
+			return artistResponse;
+		}
+		artistResponse.setMessage(message);
+		return artistResponse;
+	}
+	
+	
+	
+	
 	@RequestMapping(value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public SearchResponse search(@RequestBody String searchString) {
 		// wala pa ni siya gamit
@@ -60,6 +87,8 @@ public class NavigationEndpoint {
 		return sr;
 	}
 
+	
+	
 	@RequestMapping(value = "/test")
 	public String toIndex() {
 		System.out.println("user dir:" + System.getProperty("user.dir"));

@@ -14,6 +14,7 @@ import com.blackparty.syntones.model.SongLine;
 import com.blackparty.syntones.service.CommonWordService;
 
 public class Summarize {
+
 	@Autowired
 	CommonWordService commonWordService;
 	private Map<String, Integer> wordMap;
@@ -140,4 +141,5 @@ public class Summarize {
 //		}
 		return lyrics;
 	}
+
 }

@@ -19,6 +19,7 @@ import com.blackparty.syntones.model.SongLine;
 public class SongLineDAO {
 	@Autowired SessionFactory sessionFactory;
 	
+
 	public void addSongLine(SongLine songLine)throws Exception{
 		Session session = sessionFactory.openSession();
 		session.save(songLine);
@@ -26,6 +27,7 @@ public class SongLineDAO {
 		session.close();
 	}
 	
+
 	public void truncateTable(){
 		Session session = sessionFactory.openSession();
 		session.createSQLQuery("truncate table song_line_tbl").executeUpdate();

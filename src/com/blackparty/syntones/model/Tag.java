@@ -1,8 +1,6 @@
 package com.blackparty.syntones.model;
 
-
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,37 +10,29 @@ import javax.persistence.GenerationType;
 import javax.persistence.Transient;
 
 @Entity
-@Table(name="tag_tbl")
+@Table(name = "tag_tbl")
 public class Tag {
-	
-	@Id 
+	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
-	
-	@Column(name="tag")
+
+	@Column(name = "tag")
 	private String tag;
-	
+
 	@Transient
 	private List<TagSynonym> synonyms;
-	
-	public Tag(){
-		
-		
+
+	public Tag() {
+
 	}
-	
-	
 
 	public List<TagSynonym> getSynonyms() {
 		return synonyms;
 	}
 
-
-
 	public void setSynonyms(List<TagSynonym> synonyms) {
 		this.synonyms = synonyms;
 	}
-
-
 
 	public long getId() {
 		return id;
@@ -63,13 +53,7 @@ public class Tag {
 	@Override
 	public String toString() {
 		return "Tag [id=" + id + ", tag=" + tag + "]";
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
+
 }

@@ -12,8 +12,6 @@ import com.blackparty.syntones.model.SongLine;
 @Service
 public class SongLineService {
 	@Autowired private SongLineDAO songLineDao;
-	
-	
 	public void truncateTable(){
 		songLineDao.truncateTable();
 	}
@@ -28,6 +26,7 @@ public class SongLineService {
 	}
 	
 	public List<SongLine> getAllLines()throws Exception{
+
 		return songLineDao.getAllLines();
 	}
 }
