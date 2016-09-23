@@ -2,7 +2,6 @@ package com.blackparty.syntones.response;
 
 import java.util.List;
 
-
 import com.blackparty.syntones.model.Tag;
 
 public class SynonymResponse {
@@ -26,5 +25,9 @@ public class SynonymResponse {
 	public String toString() {
 		return "SynonymResponse [synonyms=" + synonyms + ", tag=" + tag + "]";
 	}
+	
+
+	
+	
 	
 }

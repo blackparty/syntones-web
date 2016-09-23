@@ -69,6 +69,8 @@ public class SongLine {
 		this.result = result;
 	}
 
+
+	
 	public long getSongId() {
 		return songId;
 	}
@@ -82,6 +84,8 @@ public class SongLine {
 		return "SongLine [lineNumber=" + lineNumber + ", line=" + line + ", result=" + result + ", songId=" + songId
 				+ "]";
 	}
+	
+	
 	public float compareTo(SongLine compareSongLine) {
         float compareResult = ((SongLine) compareSongLine).getResult();
         return compareResult - this.result;
@@ -102,5 +106,7 @@ public class SongLine {
 
         }
     };
+	
 
+	
 }

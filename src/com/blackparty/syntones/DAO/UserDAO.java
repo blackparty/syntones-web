@@ -49,8 +49,6 @@ public class UserDAO {
 		session.close();
 
 		System.out.println("Unique result :"+fetchedUser.toString());
-
-
 		return fetchedUser;
 	}
 }

@@ -113,12 +113,31 @@ public class PlayedSongsDAO {
 		Query query = session.createQuery("from ThreeItemSet");
 		return query.list();
 	}
-	
+
 	public List<OneItemSetCount> getOneItemSetCount() {
 
 		Session session = sf.openSession();
 		Query query = session.createQuery("from OneItemSetCount");
 		return query.list();
+	}
+
+	public boolean checkIfPlayedSongExists(long session_id, String song_id) {
+		boolean songExists;
+		Session session = sf.openSession();
+		Query query = session.createQuery("from PlayedSongs where session_id = :session_id AND track_id = :song_id");
+		query.setLong("session_id", session_id);
+		query.setString("song_id", song_id);
+
+		PlayedSongs playedSongs = (PlayedSongs) query.uniqueResult();
+		if (playedSongs!=null) {
+			songExists = true;
+		} else {
+			songExists = false;
+		}
+
+		session.flush();
+		session.close();
+		return songExists;
 	}
 
 }

@@ -52,8 +52,9 @@ public class NavigationEndpoint {
 	private PlaylistService playlistService;
 	@Autowired
 	private PlaylistSongService playlistSongService;
-	@Autowired private ArtistService artistService;
-
+	
+	@Autowired ArtistService artistService;
+	
 	@RequestMapping(value="/getAllArtists",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ArtistResponse getAllArtist(){
 		System.out.println("Received request to get all artists");
@@ -75,7 +76,6 @@ public class NavigationEndpoint {
 	
 	
 	
-	
 	@RequestMapping(value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public SearchResponse search(@RequestBody String searchString) {
 		// wala pa ni siya gamit
@@ -87,8 +87,6 @@ public class NavigationEndpoint {
 		return sr;
 	}
 
-	
-	
 	@RequestMapping(value = "/test")
 	public String toIndex() {
 		System.out.println("user dir:" + System.getProperty("user.dir"));

@@ -11,6 +11,7 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.type.LongType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +26,16 @@ public class SongDAO {
 	@Autowired private SessionFactory sf;
 	@Autowired private ArtistService as;
 	
-
-	
-	public void addSong(Song song)throws Exception{
+	public List<Long> getAllSongByArtist(Artist artist)throws Exception{
+		Session session = sf.openSession();
+		Query query = session.createSQLQuery("select song_id from song_tbl where artist_artist_id = :id").addScalar("song_id",LongType.INSTANCE);
+		query.setLong("id", artist.getArtistId());
+		List<Long> list = query.list();
+		session.flush();
+		session.close();
+		return list;
+	}
+	public long addSong(Song song)throws Exception{
 		Session session = sf.openSession();
 		Artist fetchedArtist =  as.getArtist(song.getArtistName());
 		song.setArtist(fetchedArtist);
@@ -38,6 +46,7 @@ public class SongDAO {
 		uploader.upload(song.getFile(),songId,artistId);
 		session.flush();
 		session.close();
+		return songId;
 	}
 
 
@@ -51,10 +60,10 @@ public class SongDAO {
 
 	public Song getSong(long songId)throws Exception{
 		Session session = sf.openSession();
+		System.out.println("Querying song for :"+songId);
 		Query q = session.createQuery("from Song where song_id =:id");
 		q.setLong("id", songId);
 		Song song = (Song)q.uniqueResult();
-		System.out.println("song query: "+song.toString());
 		session.flush();
 		session.close();
 		return song;

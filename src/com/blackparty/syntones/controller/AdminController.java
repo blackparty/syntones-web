@@ -156,9 +156,9 @@ public class AdminController {
 		ArrayList<OneItemSetCount> one_item_set_count_list = ar.getOneItemCount(session_id_list, oneItemBasket,
 				played_songs_list, track_id_list);
 
-		if (playedSongsService.getOneItemSetCount().isEmpty()) {
-			playedSongsService.insertOneItemSetCount(one_item_set_count_list);
-		}
+//		if (playedSongsService.getOneItemSetCount().isEmpty()) {
+//			playedSongsService.insertOneItemSetCount(one_item_set_count_list);
+//		}
 
 		ArrayList<TwoItemSetCombo> two_item_set_combo_list = ar.getTwoItemCombo(track_id_list);
 
@@ -168,9 +168,9 @@ public class AdminController {
 		ArrayList<TwoItemSet> two_item_set_list = ar.getTwoItemSet(one_item_set_count_list, track_id_list,
 				twoItemBasket, two_item_set_combo_list, session_id_list);
 
-		if (playedSongsService.getTwoItemSet().isEmpty()) {
-			playedSongsService.insertTwoItemSet(two_item_set_list);
-		}
+//		if (playedSongsService.getTwoItemSet().isEmpty()) {
+//			playedSongsService.insertTwoItemSet(two_item_set_list);
+//		}
 
 		ArrayList<ThreeItemSetCombo> three_item_set_combo_list = ar.getThreeItemCombo(track_id_list);
 		int[][] threeItemBasket = ar.getThreeItemBasket(oneItemBasket, track_id_list, three_item_set_combo_list,
@@ -179,9 +179,9 @@ public class AdminController {
 		ArrayList<ThreeItemSet> three_item_set_list = ar.getThreeItemSet(three_item_set_combo_list, two_item_set_list,
 				threeItemBasket, session_id_list);
 
-		if (playedSongsService.getThreeItemSet().isEmpty()) {
-			playedSongsService.insertThreeItemSet(three_item_set_list);
-		}
+//		if (playedSongsService.getThreeItemSet().isEmpty()) {
+//			playedSongsService.insertThreeItemSet(three_item_set_list);
+//		}
 
 		ArrayList<TwoItemSetRecomSong> two_item_recom_song_list = ar.getTwoItemRecomSong(two_item_set_list);
 		ArrayList<ThreeItemSetRecomSong> three_item_recom_song_list = ar.getThreeItemRecomSong(three_item_set_list);

@@ -58,16 +58,14 @@ public class ArController {
 		String song_id = request.getParameter("song_id");
 		Long session_id = Long.parseLong(request.getParameter("session_id"));
 
-		List<PlayedSongs> played_songs_list = playedSongsService.getPlayedSongs();
-
-		for (PlayedSongs a : played_songs_list) {
-
-			if (!a.getSession_id().equals(session_id) && !a.getTrack_id().equals(song_id)) {
-				PlayedSongs playedSongs = new PlayedSongs();
-				playedSongs.setSession_id(session_id);
-				playedSongs.setTrack_id(song_id);
-				playedSongsService.savePlayedSongs(playedSongs);
-			}
+		boolean playedSongExists = playedSongsService.checkIfPlayedSongExists(session_id, song_id);
+		System.out.println("EXISTS:" + playedSongExists);
+		if (playedSongExists == false) {
+			PlayedSongs playedSongs = new PlayedSongs();
+			playedSongs.setSession_id(session_id);
+			playedSongs.setTrack_id(song_id);
+			System.out.println("EXISTS:" + playedSongExists);
+			playedSongsService.savePlayedSongs(playedSongs);
 		}
 
 		return "playSong";

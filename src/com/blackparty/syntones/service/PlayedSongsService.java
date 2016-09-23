@@ -52,4 +52,8 @@ public class PlayedSongsService {
 	public List<OneItemSetCount> getOneItemSetCount() {
 		return playedSongsDAO.getOneItemSetCount();
 	}
+	
+	public boolean checkIfPlayedSongExists(long session_id, String song_id){
+		return playedSongsDAO.checkIfPlayedSongExists(session_id, song_id);
+	}
 }

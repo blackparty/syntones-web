@@ -414,7 +414,7 @@ public class AssociationRule {
 				three_item_combo = three_item_track[0] + "," + three_item_track[1];
 
 				if (three_item_combo.equals(two_item_set_list.get(b).getTrack_id())) {
-					System.out.println(three_item_combo);
+			
 					if (three_item_set_count_list.get(a).getCount() != 0) {
 						confidence = 100
 								/ (two_item_set_list.get(b).getCount() / three_item_set_count_list.get(a).getCount());
