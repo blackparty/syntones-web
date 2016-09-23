@@ -12,7 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.blackparty.syntones.DAO.SongDAO;
+<<<<<<< HEAD
 import com.blackparty.syntones.model.SearchModel;
+=======
+import com.blackparty.syntones.model.Artist;
+>>>>>>> origin/master
 import com.blackparty.syntones.model.Song;
 
 @Service
@@ -21,8 +25,8 @@ public class SongService {
 	private SongDAO songDao;
 	
 	
-	public void addSong(Song song) throws Exception{
-		songDao.addSong(song);
+	public long addSong(Song song) throws Exception{
+		return songDao.addSong(song);
 	}
 
 
@@ -30,8 +34,13 @@ public class SongService {
 		return songDao.getAllSongsFromDb();
 	}
 
+<<<<<<< HEAD
 	public ArrayList<Song> fetchAllSong()throws Exception{
 		return songDao.fetchAllSong();
+=======
+	public List<Long>getAllSongsByArtist(Artist artist)throws Exception{
+		return songDao.getAllSongByArtist(artist);
+>>>>>>> origin/master
 	}
 
 	public List<Song> getAllSongs() throws Exception{

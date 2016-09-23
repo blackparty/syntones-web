@@ -18,7 +18,6 @@ import com.blackparty.syntones.model.Message;
 import com.blackparty.syntones.model.Playlist;
 import com.blackparty.syntones.model.User;
 import com.blackparty.syntones.response.LibraryResponse;
-import com.blackparty.syntones.response.PlaylistResponse;
 import com.blackparty.syntones.response.ProfileResponse;
 import com.blackparty.syntones.service.PlaylistService;
 import com.blackparty.syntones.service.SongService;

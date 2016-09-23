@@ -16,6 +16,10 @@ public class PlaylistService {
 	public void savePlaylist(Playlist playlist)throws Exception{
 		playlistDao.addPlaylist(playlist);
 	}
+	
+	public long addGeneratedPlaylist(Playlist playlist)throws Exception{
+		return playlistDao.addGeneratedPlaylist(playlist);
+	}
 	public List<Playlist> getPlaylist(User user)throws Exception{
 		return playlistDao.getPlaylist(user);
 	}
