@@ -244,12 +244,13 @@ public class MusicEndpoint {
 
 	@RequestMapping(value = "/listen", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ListenResponse listen(@RequestBody Song song) {
-		System.out.println("Received request to listen.");
-		String audio = "D:/Our_Files1/Eric/School/Thesis/Syntones/Songs/Uploaded/50450/500700.mp3";
-		File file = new File(audio);
-		MediaResource mediaResource = new MediaResource();
 		ListenResponse listenResponse = new ListenResponse();
-
+		//capture user's date and time when the music is played.
+		DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+		Date dateObject = new Date();
+		
+		
+		
 		// insert service that will fetch recommended songs to be added on
 		// listenresponse
 
