@@ -33,7 +33,6 @@ public class LyricsExtractor {
             lyrics.add(((TextNode)e).getWholeText());
           }     
       }
-
      return lyrics;
    }
 	

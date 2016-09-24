@@ -1,6 +1,7 @@
 package com.blackparty.syntones.config;
 
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -16,6 +17,9 @@ import org.springframework.dao.annotation.PersistenceExceptionTranslationPostPro
 import org.springframework.orm.hibernate4.HibernateTransactionManager;
 import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.blackparty.syntones.model.Playlist;
+import com.blackparty.syntones.model.Song;
 
 @Configuration
 @ComponentScan({"com.blackparty.syntones.config"})
@@ -33,7 +37,9 @@ public class PersistenceConfig {
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }
-
+	
+	
+	
     @Bean
     public DataSource restDataSource() {
         final BasicDataSource dataSource = new BasicDataSource();
