@@ -42,6 +42,9 @@ public class Song {
 
 	@Transient
 	private int distance;
+	
+	@Column(name = "vector_space", columnDefinition = "text")
+	private String vectorSpace;
 
 	@Transient
 	private File file;
@@ -141,6 +144,16 @@ public class Song {
 		return "Song[Song Title: "+songTitle+", Artist: "+artistName+" ]";
 	}
 	
+	
+	
+	public String getVectorSpace() {
+		return vectorSpace;
+	}
+
+	public void setVectorSpace(String vectorSpace) {
+		this.vectorSpace = vectorSpace;
+	}
+
 	@Override
 	public String toString(){
 		return "Song [songId=" + songId + ", songTitle=" + songTitle + ", artist= " + artistName + "]";

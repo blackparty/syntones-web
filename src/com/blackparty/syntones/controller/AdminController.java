@@ -16,15 +16,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.blackparty.syntones.core.ArtistWordBankProcess;
 import com.blackparty.syntones.core.AssociationRule;
 import com.blackparty.syntones.core.FileCopy;
 import com.blackparty.syntones.core.ID3Extractor;
 import com.blackparty.syntones.core.LyricsExtractor;
+import com.blackparty.syntones.core.SongWordBankProcess;
 import com.blackparty.syntones.core.TrackSearcher;
 import com.blackparty.syntones.model.Artist;
 import com.blackparty.syntones.model.OneItemSetCount;
 import com.blackparty.syntones.model.PlayedSongs;
 import com.blackparty.syntones.model.Song;
+import com.blackparty.syntones.model.SongWordBank;
+import com.blackparty.syntones.model.TemporaryModel;
 import com.blackparty.syntones.model.ThreeItemSet;
 import com.blackparty.syntones.model.ThreeItemSetCombo;
 import com.blackparty.syntones.model.ThreeItemSetRecomSong;
@@ -32,8 +36,10 @@ import com.blackparty.syntones.model.TwoItemSet;
 import com.blackparty.syntones.model.TwoItemSetCombo;
 import com.blackparty.syntones.model.TwoItemSetRecomSong;
 import com.blackparty.syntones.service.ArtistService;
+import com.blackparty.syntones.service.ArtistWordBankService;
 import com.blackparty.syntones.service.PlayedSongsService;
 import com.blackparty.syntones.service.SongService;
+import com.blackparty.syntones.service.SongWordBankService;
 
 @Controller
 
@@ -42,9 +48,16 @@ import com.blackparty.syntones.service.SongService;
 public class AdminController {
 	@Autowired
 	ArtistService as;
+	
+	@Autowired
+	ArtistWordBankService aservice;
 
 	@Autowired
 	SongService ss;
+
+
+	@Autowired
+	SongWordBankService sservice;
 
 	@Autowired
 	PlayedSongsService playedSongsService;
@@ -116,6 +129,25 @@ public class AdminController {
 				song.setFile((File) request.getSession().getAttribute("file"));
 				// save song to the database
 				ss.addSong(song);
+				
+				//word bank process
+				List<Song> songs = ss.getAllSongs();
+				List<Artist> artists = as.getAllArtists();
+				if (!songs.isEmpty() && !artists.isEmpty()) {
+					SongWordBankProcess swb = new SongWordBankProcess();
+					TemporaryModel tm = swb.WBSongProcess(songs);
+					songs = tm.getSongs();
+					List<SongWordBank> words = tm.getWords();
+
+					ss.updateBatchAllSongs(songs);
+					sservice.updateWordBank(words);
+
+					ArtistWordBankProcess awb = new ArtistWordBankProcess();
+					tm = awb.WBArtistProcess(artists);
+
+					as.updateBatchAllArtist(tm.getArtists());
+					aservice.updateWordBank(tm.getAwords());
+				}
 			}
 
 		} catch (Exception e) {
