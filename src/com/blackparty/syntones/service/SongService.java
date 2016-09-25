@@ -52,7 +52,7 @@ public class SongService {
 		songDao.updateBatchAllSongs(songs);
 	}
 	
-	public ArrayList<Song> getSongs(ArrayList<SearchModel> model){
-		return songDao.getSongs(model);
+	public List<Song> getSongs(List<SearchModel> list){
+		return songDao.getSongs(list);
 	}
 }

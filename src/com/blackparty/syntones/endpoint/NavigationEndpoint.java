@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackparty.syntones.core.MediaResource;
+import com.blackparty.syntones.core.SearchProcess;
 import com.blackparty.syntones.model.Artist;
 import com.blackparty.syntones.model.Message;
 import com.blackparty.syntones.model.Playlist;
+import com.blackparty.syntones.model.SearchResultModel;
 import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.model.User;
 import com.blackparty.syntones.response.ArtistResponse;
@@ -19,9 +21,11 @@ import com.blackparty.syntones.response.PlaylistSongsResponse;
 import com.blackparty.syntones.response.SearchResponse;
 import com.blackparty.syntones.response.SongListResponse;
 import com.blackparty.syntones.service.ArtistService;
+import com.blackparty.syntones.service.ArtistWordBankService;
 import com.blackparty.syntones.service.PlaylistService;
 import com.blackparty.syntones.service.PlaylistSongService;
 import com.blackparty.syntones.service.SongService;
+import com.blackparty.syntones.service.SongWordBankService;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -52,6 +56,11 @@ public class NavigationEndpoint {
 	private PlaylistService playlistService;
 	@Autowired
 	private PlaylistSongService playlistSongService;
+	@Autowired
+	SongWordBankService sbservice;
+
+	@Autowired
+	ArtistWordBankService abservice;
 	
 	@Autowired ArtistService artistService;
 	
@@ -77,13 +86,53 @@ public class NavigationEndpoint {
 	
 	
 	@RequestMapping(value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public SearchResponse search(@RequestBody String searchString) {
+	public SearchResponse search(@RequestBody String searchString) throws Exception {
 		// wala pa ni siya gamit
 		System.out.println("recived search request");
 		SearchResponse sr = new SearchResponse();
 		Message message = new Message();
 		message.setMessage("search request \"" + searchString + "\"has been received.");
 		sr.setMessage(message);
+		
+
+		SearchProcess sp = new SearchProcess();
+		SearchResultModel searchResult = sp.SearchProcess(searchString,
+				abservice.fetchAllWordBank(), sbservice.fetchAllWordBank(),
+				songService.getAllSongs(), artistService.getAllArtists());
+
+		List<Song> songsPrio = null;
+		List<Song> songs = null;
+		List<Artist> artists = artistService.getArtists(searchResult.getArtists());
+
+		if (!searchResult.isArtistNan() && !searchResult.isSongNan()) {
+			for (Song song : songService.getSongs(searchResult.getSongs())) {
+				for (Artist artist : artists) {
+					if (song.getArtist().getArtistId() == artist.getArtistId()) {
+						songsPrio.add(song);
+					} else {
+						songs.add(song);
+					}
+
+				}
+
+			}
+		/*	request.getSession().setAttribute("resultSongPrio", songsPrio);
+			request.getSession().setAttribute("resultArtist", artists);
+			request.getSession().setAttribute("resultSong", songs);
+			return mav;*/
+		} else if (searchResult.isSongNan() && !searchResult.isArtistNan()) {
+			/*request.getSession().setAttribute("resultArtist", artists);
+			return mav;*/
+		} else if (searchResult.isArtistNan() && !searchResult.isSongNan()) {
+		/*	
+			request.getSession().setAttribute("resultSongPrio", ss.getSongs(searchResult.getSongs()));
+			return mav;*/
+		} else {
+			/*request.getSession().setAttribute("resultMessage",
+					"Artist/Song not found");
+			return mav;*/
+		}
+		
 		return sr;
 	}
 

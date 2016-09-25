@@ -1,6 +1,7 @@
 package com.blackparty.syntones.core;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -15,10 +16,10 @@ public class SongWordBankProcess {
 	@Autowired
 	private SongWordBankService ss;
 
-	public TemporaryModel WBSongProcess(List<Song> songs) throws Exception {
-		ArrayList<String> bagOfWordsSong = new ArrayList();
-		ArrayList<TokenNCount> perSong = new ArrayList();
-		ArrayList<ArrayList<TokenNCount>> wordsPerSong = new ArrayList();
+	public TemporaryModel WBSongProcess(ArrayList<Song> songs) throws Exception {
+		ArrayList<String> bagOfWordsSong = new ArrayList<String>();
+		ArrayList<TokenNCount> perSong = new ArrayList<TokenNCount>();
+		ArrayList<List<TokenNCount>> wordsPerSong = new ArrayList();
 		ArrayList<SongWordBank> bow = new ArrayList<SongWordBank>();
 		TemporaryModel tm = new TemporaryModel();
 
@@ -43,12 +44,12 @@ public class SongWordBankProcess {
 					}
 				}
 			}
-			perSong = getTokenCount(songSL, delimeter);
+			perSong = (ArrayList<TokenNCount>) getTokenCount(songSL, delimeter);
 
 			wordsPerSong.add(perSong);
 
 		}
-		bagOfWordsSong = sortModelList(bagOfWordsSong);
+		bagOfWordsSong = (ArrayList<String>) sortModelList(bagOfWordsSong);
 
 		for (String w : bagOfWordsSong) {
 			SongWordBank wb = new SongWordBank();
@@ -64,7 +65,7 @@ public class SongWordBankProcess {
 	}
 
 	private int[][] getMatrix(int size, ArrayList<String> bagOfWords,
-			ArrayList<ArrayList<TokenNCount>> wordsPerIndex, String[] title) {
+			ArrayList<List<TokenNCount>> wordsPerIndex, String[] title) {
 		boolean flag;
 		int[][] matrix = new int[size][bagOfWords.size()];
 
@@ -115,8 +116,9 @@ public class SongWordBankProcess {
 		return weight;
 	}
 
+
 	private ArrayList<TokenNCount> getTokenCount(String data, String delimeter) {
-		ArrayList<TokenNCount> model_list = new ArrayList();
+		ArrayList<TokenNCount> model_list = new ArrayList<TokenNCount>();
 		StringTokenizer str = new StringTokenizer(data, delimeter);
 		while (str.hasMoreTokens()) {
 			String token = str.nextToken().trim();
@@ -178,7 +180,7 @@ public class SongWordBankProcess {
 		}
 	};
 
-	public List<Song> saveMatrixToList(List<Song> songs,
+	public ArrayList<Song> saveMatrixToList(ArrayList<Song> songs,
 			int[][] matrix) {
 		int counter = 0;
 		if (songs.isEmpty()) {

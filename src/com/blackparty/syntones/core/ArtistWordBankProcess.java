@@ -1,6 +1,7 @@
 package com.blackparty.syntones.core;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -14,9 +15,9 @@ import com.blackparty.syntones.model.TokenNCount;
 
 public class ArtistWordBankProcess {
 	public TemporaryModel WBArtistProcess(List<Artist> artists) {
-		ArrayList<String> bagOfWordsArtists = new ArrayList();
-		ArrayList<TokenNCount> perArtist = new ArrayList();
-		ArrayList<ArrayList<TokenNCount>> wordsPerArtist = new ArrayList();
+		ArrayList<String> bagOfWordsArtists = new ArrayList<String>();
+		ArrayList<TokenNCount> perArtist = new ArrayList<TokenNCount>();
+		ArrayList<ArrayList<TokenNCount>> wordsPerArtist = new ArrayList<>();
 		ArrayList<ArtistWordBank> bow = new ArrayList<ArtistWordBank>();
 		TemporaryModel tm = new TemporaryModel();
 
@@ -37,12 +38,12 @@ public class ArtistWordBankProcess {
 					}
 				}
 			}
-			perArtist = getTokenCount(artist.getArtistName(), delimeter);
+			perArtist = (ArrayList<TokenNCount>) getTokenCount(artist.getArtistName(), delimeter);
 
 			wordsPerArtist.add(perArtist);
 
 		}
-		bagOfWordsArtists = sortModelList(bagOfWordsArtists);
+		bagOfWordsArtists = (ArrayList<String>) sortModelList(bagOfWordsArtists);
 
 		for (String w : bagOfWordsArtists) {
 			ArtistWordBank wb = new ArtistWordBank();
@@ -58,20 +59,20 @@ public class ArtistWordBankProcess {
 		return tm;
 	}
 
-	private int[][] getMatrix(int size, ArrayList<String> bagOfWords,
-			ArrayList<ArrayList<TokenNCount>> wordsPerIndex) {
+	private int[][] getMatrix(int size, List<String> bagOfWords,
+			ArrayList<ArrayList<TokenNCount>> wordsPerArtist) {
 		boolean flag;
 		int[][] matrix = new int[size][bagOfWords.size()];
 
-		for (int i = 0; i < wordsPerIndex.size(); i++) {
+		for (int i = 0; i < wordsPerArtist.size(); i++) {
 			int c = 0;
 			for (int a = 0; a < bagOfWords.size(); a++) {
 				flag = false;
 
-				for (int b = 0; b < wordsPerIndex.get(i).size(); b++) {
+				for (int b = 0; b < wordsPerArtist.get(i).size(); b++) {
 					if (bagOfWords.get(a).equalsIgnoreCase(
-							wordsPerIndex.get(i).get(b).getToken())) {
-						matrix[i][c++] = wordsPerIndex.get(i).get(b).getCount();
+							wordsPerArtist.get(i).get(b).getToken())) {
+						matrix[i][c++] = wordsPerArtist.get(i).get(b).getCount();
 						flag = true;
 						break;
 					}
@@ -88,7 +89,7 @@ public class ArtistWordBankProcess {
 	}
 
 	private ArrayList<TokenNCount> getTokenCount(String data, String delimeter) {
-		ArrayList<TokenNCount> model_list = new ArrayList();
+		ArrayList<TokenNCount> model_list = new ArrayList<TokenNCount>();
 		StringTokenizer str = new StringTokenizer(data, delimeter);
 		while (str.hasMoreTokens()) {
 			String token = str.nextToken().trim();

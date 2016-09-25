@@ -1,7 +1,6 @@
 package com.blackparty.syntones.service;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,7 @@ public class ArtistService {
 		artistDAO.updateBatchAllArtist(artists);
 	}
 	
-	public ArrayList<Artist> getArtists(ArrayList<SearchModel> model){
+	public List<Artist> getArtists(List<SearchModel> model){
 		return artistDAO.getArtists(model);
 	}
 

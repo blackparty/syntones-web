@@ -102,7 +102,7 @@ public class SongDAO {
 	}
 
 
-	public ArrayList<Song> getSongs(ArrayList<SearchModel> sm) {
+	public List<Song> getSongs(List<SearchModel> sm) {
 		Session session = sf.openSession();
 		ArrayList<Song> songs = new ArrayList();
 		for (SearchModel model : sm) {

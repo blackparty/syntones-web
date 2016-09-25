@@ -19,21 +19,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.blackparty.syntones.core.ArtistWordBankProcess;
 import com.blackparty.syntones.core.ID3Extractor;
 import com.blackparty.syntones.core.LyricsExtractor;
+import com.blackparty.syntones.core.SongWordBankProcess;
 import com.blackparty.syntones.core.Summarize;
 import com.blackparty.syntones.core.Tagger;
 import com.blackparty.syntones.core.TrackSearcher;
 import com.blackparty.syntones.model.Artist;
 import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.model.SongLine;
+import com.blackparty.syntones.model.SongWordBank;
 import com.blackparty.syntones.model.Tag;
 import com.blackparty.syntones.model.TagSong;
 import com.blackparty.syntones.model.TagSynonym;
+import com.blackparty.syntones.model.TemporaryModel;
 import com.blackparty.syntones.service.ArtistService;
+import com.blackparty.syntones.service.ArtistWordBankService;
 import com.blackparty.syntones.service.PlayedSongsService;
 import com.blackparty.syntones.service.SongLineService;
 import com.blackparty.syntones.service.SongService;
+import com.blackparty.syntones.service.SongWordBankService;
 import com.blackparty.syntones.service.TagService;
 import com.blackparty.syntones.service.TagSongService;
 import com.blackparty.syntones.service.TagSynonymService;
@@ -45,6 +51,11 @@ public class AddSongController {
 	private ArtistService as;
 	@Autowired
 	private SongService ss;
+	@Autowired
+	ArtistWordBankService aservice;
+	@Autowired
+	SongWordBankService sservice;
+
 	@Autowired
 	private PlayedSongsService playedSongsService;
 	@Autowired
@@ -142,6 +153,27 @@ public class AddSongController {
 			long songId = ss.addSong(song);
 			song.setSongId(songId);
 
+
+			//word bank process
+			List<Song> songs = ss.getAllSongs();
+			List<Artist> artists = as.getAllArtists();
+			if (!songs.isEmpty() && !artists.isEmpty()) {
+				SongWordBankProcess swb = new SongWordBankProcess();
+				TemporaryModel tm = swb.WBSongProcess((ArrayList<Song>) songs);
+				songs = tm.getSongs();
+				List<SongWordBank> words = tm.getWords();
+
+				ss.updateBatchAllSongs(songs);
+				sservice.updateWordBank(words);
+
+				ArtistWordBankProcess awb = new ArtistWordBankProcess();
+				tm = awb.WBArtistProcess(artists);
+
+				as.updateBatchAllArtist(tm.getArtists());
+				aservice.updateWordBank(tm.getAwords());
+			}
+			
+			
 			songLineService.truncateTable();
 			// rework global line ranking
 			List<Song> songList = songService.getAllSongsFromDb();
@@ -189,7 +221,7 @@ public class AddSongController {
 		ModelAndView mav = new ModelAndView();
 		try {
 			System.out.println(multiPartFile.getOriginalFilename());
-			File file = new File("D:/deletables/" + multiPartFile.getOriginalFilename());
+			File file = new File(multiPartFile.getOriginalFilename());
 			multiPartFile.transferTo(file);
 			System.out.println("file name: " + file.getName());
 			// FileCopy fc = new FileCopy();

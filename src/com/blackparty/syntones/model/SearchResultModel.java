@@ -1,27 +1,27 @@
 package com.blackparty.syntones.model;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class SearchResultModel {
 	
-	private ArrayList<SearchModel> songs;
-	private ArrayList<SearchModel> artists;
+	private List<SearchModel> songs;
+	private List<SearchModel> artists;
 	boolean artistNan;
 	boolean songNan;
 	
 	public SearchResultModel(){
 		
 	}
-	public ArrayList<SearchModel> getSongs() {
+	public List<SearchModel> getSongs() {
 		return songs;
 	}
-	public void setSongs(ArrayList<SearchModel> songs) {
+	public void setSongs(List<SearchModel> songs) {
 		this.songs = songs;
 	}
-	public ArrayList<SearchModel> getArtists() {
+	public List<SearchModel> getArtists() {
 		return artists;
 	}
-	public void setArtists(ArrayList<SearchModel> artists) {
+	public void setArtists(List<SearchModel> artists) {
 		this.artists = artists;
 	}
 	public boolean isArtistNan() {

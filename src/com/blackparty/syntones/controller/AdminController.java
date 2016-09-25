@@ -135,7 +135,7 @@ public class AdminController {
 				List<Artist> artists = as.getAllArtists();
 				if (!songs.isEmpty() && !artists.isEmpty()) {
 					SongWordBankProcess swb = new SongWordBankProcess();
-					TemporaryModel tm = swb.WBSongProcess(songs);
+					TemporaryModel tm = swb.WBSongProcess((ArrayList<Song>) songs);
 					songs = tm.getSongs();
 					List<SongWordBank> words = tm.getWords();
 

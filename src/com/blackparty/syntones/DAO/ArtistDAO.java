@@ -3,7 +3,6 @@ package com.blackparty.syntones.DAO;
 
 
 
-import java.util.ArrayList;
 import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -77,9 +76,9 @@ public class ArtistDAO {
 		session.close();
 	}
 	
-	public ArrayList<Artist> getArtists(ArrayList<SearchModel> model) {
+	public List<Artist> getArtists(List<SearchModel> model) {
 		Session session = sf.openSession();
-		ArrayList<Artist> artists = new ArrayList();
+		List<Artist> artists = null;
 		for (SearchModel sm : model) {
 			Query query = session
 					.createQuery("from Artist where artistId =:id");
