@@ -48,6 +48,9 @@ public class PlaylistDAO {
 	public long addGeneratedPlaylist(Playlist playlist) throws Exception {
 		System.out.println("SAVING GENERATED PLAYLIST TO DB.");
 		User fetchedUser = userService.getUser(playlist.getUser());
+		if(playlist.getPlaylistName().length() == 0){
+			playlist.setPlaylistName("My Playlist");
+		}
 		playlist.setUser(fetchedUser);
 		Session session = sessionFactory.openSession();
 		long playlistId = (long) session.save(playlist);
