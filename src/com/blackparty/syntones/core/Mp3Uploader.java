@@ -19,6 +19,7 @@ public class Mp3Uploader {
 		String fileName = ftpUploader.uploadFile(file.toPath().toString(), artistId+"-"+songId+".mp3", "/");
 		ftpUploader.disconnect();
 		System.out.println("Done");
+
 //		uploadDirectory = uploadDirectory.concat(artistId+"/");
 //		File newFile = new File(uploadDirectory);
 //		if(!newFile.exists()){
@@ -30,5 +31,6 @@ public class Mp3Uploader {
 //		out.close();
 		return fileName;
 	}
+
 
 }

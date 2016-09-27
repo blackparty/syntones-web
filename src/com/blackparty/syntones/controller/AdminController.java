@@ -148,6 +148,7 @@ public class AdminController {
 					as.updateBatchAllArtist(tm.getArtists());
 					aservice.updateWordBank(tm.getAwords());
 				}
+
 			}
 
 		} catch (Exception e) {

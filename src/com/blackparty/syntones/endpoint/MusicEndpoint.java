@@ -25,6 +25,7 @@ import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.model.SongLine;
 import com.blackparty.syntones.model.Tag;
 import com.blackparty.syntones.model.TagSong;
+
 import com.blackparty.syntones.response.GeneratePlaylistResponse;
 import com.blackparty.syntones.response.LibraryResponse;
 import com.blackparty.syntones.response.ListenResponse;
@@ -41,7 +42,6 @@ import com.blackparty.syntones.service.SongLineService;
 import com.blackparty.syntones.service.SongService;
 import com.blackparty.syntones.service.TagService;
 import com.blackparty.syntones.service.TagSongService;
-
 @RestController
 @Component
 public class MusicEndpoint {
@@ -51,15 +51,11 @@ public class MusicEndpoint {
 	private PlaylistService playlistService;
 	@Autowired
 	private PlaylistSongService playlistSongService;
-	@Autowired
-	private TagService tagService;
+	@Autowired private TagService tagService;
 	@Autowired
 	private TagSongService tagSongService;
 	@Autowired private ArtistService artistService;
 	@Autowired private SongLineService songLineService;
-	
-	
-	
 	@RequestMapping(value = "/generatePlaylistByArtist", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public GeneratePlaylistResponse generatePlaylistByArtist(@RequestBody String artistName) {
 		GeneratePlaylistResponse generatePlaylistResponse = new GeneratePlaylistResponse();
@@ -166,9 +162,6 @@ public class MusicEndpoint {
 		return generatedPlaylistResponse;
 	}
 	
-	
-
-	
 
 	@RequestMapping(value = "/generatePlaylistByTags", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public GeneratePlaylistResponse generatePlaylist(@RequestBody String[] tags) {
@@ -223,6 +216,42 @@ public class MusicEndpoint {
 		message.setFlag(true);
 		tagResponse.setMessage(message);
 		return tagResponse;
+	}
+
+
+	@RequestMapping(value = "/generatePlaylistByTags", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public GeneratePlaylistResponse generatePlaylist(@RequestBody String tag) {
+		GeneratePlaylistResponse generatePlaylistResponse = new GeneratePlaylistResponse();
+		System.out.println("Received request to generate playlist for : ");
+		List<TagSong> tagsongs = new ArrayList<>();
+		Message message = new Message();
+		try {
+		
+				System.out.println(tag);
+				tagsongs = tagSongService.getSongsByTags(tag);
+			
+			ArrayList<Song> songs = new ArrayList<>();
+			for (TagSong ts : tagsongs) {
+				System.out.println(ts.toString());
+				Song song = songService.getSong(ts.getSongId());
+				songs.add(song);
+			}
+			for (Song s : songs) {
+				System.out.println(s.toStringFromDB());
+			}
+			if (songs.size() > 0) {
+				generatePlaylistResponse.setSongs(songs);
+				message.setFlag(true);
+				generatePlaylistResponse.setMessage(message);
+			} else {
+				message.setFlag(false);
+				message.setMessage("no songs can be found with the given tag(s)");
+				generatePlaylistResponse.setMessage(message);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return generatePlaylistResponse;
 	}
 
 	@RequestMapping(value = "/removePlaylist")
