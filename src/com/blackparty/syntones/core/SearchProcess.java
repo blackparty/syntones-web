@@ -1,5 +1,6 @@
 package com.blackparty.syntones.core;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,13 +14,13 @@ public class SearchProcess {
 	public SearchResultModel SearchProcess(String searchWord, List<String> artist_wb,
 			List<String> song_wb, List<Song> songs,
 			List<Artist> artists) {
-		List<String> paths = null;
-		List<String> vectors;
-		List<String> vector_path;
-		List<SearchModel> smodel = null;
-		List<SearchModel> amodel = null;
-		List<SearchModel> sresult = null;
-		List<SearchModel> aresult = null;
+		ArrayList<String> paths = new ArrayList<String>();
+		ArrayList<String> vectors;
+		ArrayList<String> vector_path;
+		ArrayList<SearchModel> smodel = new ArrayList<SearchModel>();
+		ArrayList<SearchModel> amodel =  new ArrayList<SearchModel>();;
+		ArrayList<SearchModel> sresult =  new ArrayList<SearchModel>();;
+		ArrayList<SearchModel> aresult =  new ArrayList<SearchModel>();;
 		float vSearch, absV, absSearch, cos_angle, radians, degree;
 		int document_count_song = 0, document_count_artist, token_count_artist, token_count_song;
 		float[] idf_song, idf_artist, step4_matrix_song, step4_matrix_artist = null;
@@ -35,7 +36,7 @@ public class SearchProcess {
 		System.out.println("song size" + document_count_song);
 		token_count_song = song_wb.size();
 		vector_arr_song = getQueryWord(searchWord, song_wb);
-		smodel = toMatrixList(songs,null,"song");
+		smodel = (ArrayList<SearchModel>) toMatrixList((ArrayList<Song>) songs,null,"song");
 		idf_song = getIDF(smodel, document_count_song);
 		step3_matrix_song = step3(idf_song, smodel, document_count_song,
 				token_count_song);
@@ -93,7 +94,7 @@ public class SearchProcess {
 		System.out.println("song size" + document_count_artist);
 		token_count_artist = artist_wb.size();
 		vector_arr_artist = getQueryWord(searchWord, artist_wb);
-		amodel = toMatrixList(null,artists,"artists");
+		amodel = (ArrayList<SearchModel>) toMatrixList(null,artists,"artists");
 		idf_artist = getIDF(amodel, document_count_artist);
 		step3_matrix_artist = step3(idf_artist, amodel, document_count_artist,
 				token_count_artist);
@@ -275,9 +276,9 @@ public class SearchProcess {
 		return Math.log(x) / Math.log(2.0d);
 	}
 
-	public List<SearchModel> toMatrixList(List<Song> songs,
+	public List<SearchModel> toMatrixList(ArrayList<Song> songs,
 			List<Artist> artists, String str) {
-		List<SearchModel> array_model = null;
+		ArrayList<SearchModel> array_model = new ArrayList<SearchModel>();
 		if (str.equalsIgnoreCase("song")) {
 			for (int i = 0; i < songs.size(); i++) {
 				int[] array = getArray(songs.get(i).getVectorSpace());
