@@ -46,6 +46,9 @@ public class Song {
 	@Transient
 	private File file;
 
+	@Column(nullable=false,name="flag")
+	private boolean flag;
+	
 	// connects the song to the artist class
 
 	@ManyToOne(optional = false)
@@ -141,6 +144,15 @@ public class Song {
 		return "Song[Song Title: "+songTitle+", Artist: "+artistName+" ]";
 	}
 	
+	
+	public boolean isFlag() {
+		return flag;
+	}
+
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
+
 	@Override
 	public String toString(){
 		return "Song [songId=" + songId + ", songTitle=" + songTitle + ", artist= " + artistName + "]";

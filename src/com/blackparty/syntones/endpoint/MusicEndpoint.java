@@ -250,7 +250,6 @@ public class MusicEndpoint {
 		Date dateObject = new Date();
 		
 		
-		
 		// insert service that will fetch recommended songs to be added on
 		// listenresponse
 

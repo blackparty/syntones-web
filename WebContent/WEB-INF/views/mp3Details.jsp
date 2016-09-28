@@ -5,26 +5,16 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Mp3 Details</title>
 </head>
 <body>
-	<% 
-		Song song = (Song)request.getSession().getAttribute("song");
-		String artistName;
-		String songTitle;
-		if(song != null){
-			artistName = song.getArtistName();
-			songTitle = song.getSongTitle();
-		}else{
-			artistName = (String)request.getAttribute("artistName");
-			songTitle = (String)request.getAttribute("songTitle");
-		}
-	%>	
+
 	<p>${system_message}</p>
-	<form action="fetchLyrics" method="post">
+	<form action="saveSong" method="post">
 		<input type="text" name="songTitle" value="${songTitle}"/>
 		<input type="text" name="artistName" value="${artistName}"/>
-		<input type="submit" value="Get Lyrics"/> 
+		<input type="submit" value="Save Song"/> 
 	</form>
+	<a href="index"><button>Cancel</button></a>
 </body>
 </html>
