@@ -12,11 +12,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
-public class SongEncrypt {
+public class SongEncryptDecrypt {
 	private static final String salt = "t784";
 	private static final String cryptPassword = "873147cbn9x5'2 79'79314";
 	private static final String pathEncrypted = "C:/Users/YLaya/Desktop/downloaded/";
@@ -57,4 +58,24 @@ public class SongEncrypt {
 		}
 		return false;
 	}
+	public void decrypt(String path, String outPath) throws IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+        FileInputStream fis = new FileInputStream(path);
+        FileOutputStream fos = new FileOutputStream(outPath);
+        byte[] key = (salt + cryptPassword).getBytes("UTF-8");
+        MessageDigest sha = MessageDigest.getInstance("SHA-1");
+        key = sha.digest(key);
+        key = Arrays.copyOf(key,16);
+        SecretKeySpec sks = new SecretKeySpec(key, "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, sks);
+        CipherInputStream cis = new CipherInputStream(fis, cipher);
+        int b;
+        byte[] d = new byte[8];
+        while((b = cis.read(d)) != -1) {
+            fos.write(d, 0, b);
+        }
+        fos.flush();
+        fos.close();
+        cis.close();
+    }
 }
