@@ -33,23 +33,17 @@ public class FTPDownload {
 	}
 	public String downloadFile(String fileName)
 			throws Exception {
-		String remoteFile = "/songUploaded/"+fileName;
-		File downloadFile = new File("C:/Users/YLaya/Desktop/downloaded/"+fileName);
-		OutputStream outputStream2 = new BufferedOutputStream(new FileOutputStream(downloadFile));
-        InputStream inputStream = ftp.retrieveFileStream(remoteFile);
-        byte[] bytesArray = new byte[4096];
-        int bytesRead = -1;
-        while ((bytesRead = inputStream.read(bytesArray)) != -1) {
-            outputStream2.write(bytesArray, 0, bytesRead);
-        }
-
-        boolean success = ftp.completePendingCommand();
+		String remoteFile = "C:/Users/YLaya/Desktop/downloaded/"+fileName;
+		File downloadFile = new File(fileName);
+		OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile));
+        boolean success = ftp.retrieveFile(remoteFile, outputStream);
+        outputStream.close();
+        
         if (success) {
             System.out.println("File has been downloaded successfully.");
+        }else{
+            System.out.println("WHHYYYY.");       	
         }
-        outputStream2.close();
-        inputStream.close();
-
 		return "C:/Users/YLaya/Desktop/downloaded/"+fileName;
 	}
 	

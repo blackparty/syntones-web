@@ -61,32 +61,32 @@ public class SentenceWeight {
 	            counter = counter + (int) entry.getValue();
 	            //couter++;
 	        }
-	        System.out.println("Number of words in the song: " + counter);
+	       // System.out.println("Number of words in the song: " + counter);
 	        totalNumberOfWordsInTheSong = counter;
 	        return wordMap;
 	    }
 
 	    public ArrayList<Float> getSentenceWeight(List<SongLine> songLyrics, Map<String, Integer> wordMap) {
-	        System.out.println("Calculting sentence weight.");
+	      //  System.out.println("Calculting sentence weight.");
 	        ArrayList<Float> sentenceWeight = new ArrayList<>();
 	        double sum = 0;
 	      
 	        for (SongLine line : songLyrics) {
 	            ArrayList<Float> affinityWeight = null;
 	            if (line.getLine().length() == 0) {
-	                System.out.println("hit!");
+	            //    System.out.println("hit!");
 	                continue;
 	            }
-	            System.out.println(line);
+	           // System.out.println(line);
 	            affinityWeight = getAffinityWeight(line.getLine(), wordMap);
 	            for (float s : affinityWeight) {
 	                sum = (sum + s);
 	            }
-	            System.out.println("sum = " + sum);
+	           // System.out.println("sum = " + sum);
 	            float sWeight = ((float) 1 / numberOfWordsInTheLine) * (float) sum;
 	            numberOfWordsInTheLine = 0;
 	            sum = 0;
-	            System.out.println("Sentence Weight: " + sWeight);
+	           // System.out.println("Sentence Weight: " + sWeight);
 	            sentenceWeight.add(sWeight);
 	        }
 	        return sentenceWeight;
@@ -99,12 +99,12 @@ public class SentenceWeight {
 	        StringTokenizer stringTokenizer = new StringTokenizer(line);
 	        while (stringTokenizer.hasMoreTokens()) {
 	            String word = stringTokenizer.nextToken();
-	            System.out.print("Calculating affinity of the word: " + word);
+	            //System.out.print("Calculating affinity of the word: " + word);
 	            numberOfWordsInTheLine++;
 	            int count = wordMap.get(word.toLowerCase());
-	            System.out.print("\t " + count + " / " + totalNumberOfWordsInTheSong + " = ");
+	           // System.out.print("\t " + count + " / " + totalNumberOfWordsInTheSong + " = ");
 	            float aWeight = (float) count / totalNumberOfWordsInTheSong;
-	            System.out.println(aWeight);
+	          //  System.out.println(aWeight);
 	            affinityWeight.add(aWeight);
 	        }
 	        double sum = 0;

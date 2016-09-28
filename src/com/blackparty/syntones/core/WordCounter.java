@@ -67,16 +67,16 @@ public class WordCounter {
 		// sorted treemap
 		int counter = 0;
 		Map<String, Integer> map = new TreeMap<String, Integer>(wordMap);
-		System.out.println("Reading the map in alphabetical order.");
+		//System.out.println("Reading the map in alphabetical order.");
 		Set set = map.entrySet();
 		Iterator iterator = set.iterator();
 		while (iterator.hasNext()) {
 			Map.Entry entry = (Map.Entry) iterator.next();
-			System.out.println("> " + entry.getKey() + "\t\t\t" + entry.getValue());
+		//	System.out.println("> " + entry.getKey() + "\t\t\t" + entry.getValue());
 			counter = counter + (int) entry.getValue();
 			// couter++;
 		}
-		System.out.println("Number of words in the song: " + counter);
+	//	System.out.println("Number of words in the song: " + counter);
 
 		return commonWords;
 

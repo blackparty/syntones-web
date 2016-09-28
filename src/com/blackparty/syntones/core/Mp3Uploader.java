@@ -10,34 +10,26 @@ public class Mp3Uploader {
 	// palihug ko himo properties file para adto ra mo basa ang app kung asa man
 	// gusto nato i-save ang uploaded mp3 file
 	// sa desktop nalang ni
-	private String uploadDirectory = System.getProperty("user.dir");
+	// private String uploadDirectory = System.getProperty("user.dir");
 
 	// code to save mp3 here...
-	public String upload(File file,long songId,long artistId) throws Exception{
-
-		File pfile = new File(uploadDirectory+"/songUploaded");
-		if(!pfile.exists()){
-			if (pfile.mkdir()) {
-                System.out.println("Directory is created!");
-            } else {
-                System.out.println("Failed to create directory!");
-            }
-		}
+	public String upload(File file, long songId, long artistId)throws Exception {
+		File pfile = new File("127.0.0.1/songUploaded");
+//		if (!file.exists()) {
+//			if (file.mkdir()) {
+//				System.out.println("Directory is created!");
+//			}
+//		}
 		FTPUploader ftpUploader = new FTPUploader("127.0.0.1", "yeyah", "yeyah");
-		String fileName = ftpUploader.uploadFile(file.toPath().toString(), artistId+"-"+songId+".mp3", "/songUploaded/");
+		String fileName = ftpUploader.uploadFile(file.toPath().toString(),artistId + "-" + songId + ".mp3", "/songUploaded/");
 		ftpUploader.disconnect();
 		System.out.println("Done");
-//		uploadDirectory = uploadDirectory.concat(artistId+"/");
-//		File newFile = new File(uploadDirectory);
-//		if(!newFile.exists()){
-//			newFile.mkdir();
-//		}
-//		byte data[] = Files.readAllBytes(file.toPath());
-//		FileOutputStream out = new FileOutputStream(uploadDirectory+songId+".mp3");
-//		out.write(data);
-//		out.close();
+
 		return fileName;
 
 	}
 
 }
+/*
+ * get songId = filepathsong = /songUploaded/1-1.mp3
+ */

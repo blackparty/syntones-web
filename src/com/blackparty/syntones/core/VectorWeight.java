@@ -18,18 +18,18 @@ public class VectorWeight {
 	                }
 	            }
 	            sum = ((float)1/hashedLines.size())*sum;
-	            System.out.println("Line " + (i+1) + " = " + sum);
+	         //   System.out.println("Line " + (i+1) + " = " + sum);
 	            vectorWeight.add(sum);
 	        }
 	        return vectorWeight;
 	    }
 
 	    public float[][] getLevenshteinSimilartyWeight(List<String> hashedLines) {
-	        System.out.println("Setting Levenshtein Distance matrix: ");
+	     //   System.out.println("Setting Levenshtein Distance matrix: ");
 	        int[][] ldMatrix = setLDMatrix(hashedLines);
-	        System.out.println("Setting MaxLen Matrix");
+	      //  System.out.println("Setting MaxLen Matrix");
 	        int[][] maxLenMatrix = setMaxLenMatrix(hashedLines);
-	        System.out.println("Setting LSW Matrix");
+	       // System.out.println("Setting LSW Matrix");
 	        float[][] levenshteinSimilartyWeight = new float[hashedLines.size()][hashedLines.size()];
 	        for (int i = 0; i < hashedLines.size(); i++) {
 	            for (int j = 0; j < hashedLines.size(); j++) {
