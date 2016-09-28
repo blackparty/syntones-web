@@ -37,7 +37,7 @@ public class FTPUploader {
         if (done) {
             System.out.println("The file is uploaded successfully.");
         }
-		return hostDir + fileName;
+		return fileName;
 	}
 
 	public void disconnect() {

@@ -1,6 +1,7 @@
 package com.blackparty.syntones.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.blackparty.syntones.core.ArtistWordBankProcess;
 import com.blackparty.syntones.core.ID3Extractor;
 import com.blackparty.syntones.core.LyricsExtractor;
+import com.blackparty.syntones.core.SongEncrypt;
 import com.blackparty.syntones.core.SongWordBankProcess;
 import com.blackparty.syntones.core.Summarize;
 import com.blackparty.syntones.core.Tagger;
@@ -217,7 +219,7 @@ public class AddSongController {
 	}
 
 	@RequestMapping(value = "/readMp3")
-	public ModelAndView readMp3(@RequestParam(value = "file") MultipartFile multiPartFile, HttpServletRequest request) {
+	public ModelAndView readMp3(@RequestParam(value = "file") MultipartFile multiPartFile, HttpServletRequest request) throws IllegalStateException, IOException {
 		ModelAndView mav = new ModelAndView();
 		try {
 			System.out.println(multiPartFile.getOriginalFilename());
@@ -247,6 +249,7 @@ public class AddSongController {
 				session.setAttribute("artistName", song.getArtistName());
 				session.setAttribute("songTitle", song.getSongTitle());
 				session.setAttribute("file", file);
+				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

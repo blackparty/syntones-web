@@ -14,7 +14,7 @@ public class Mp3Uploader {
 
 	// code to save mp3 here...
 	public String upload(File file, long songId, long artistId)throws Exception {
-		File pfile = new File("127.0.0.1/songUploaded");
+//		File pfile = new File("127.0.0.1/songUploaded");
 //		if (!file.exists()) {
 //			if (file.mkdir()) {
 //				System.out.println("Directory is created!");
@@ -24,7 +24,8 @@ public class Mp3Uploader {
 		String fileName = ftpUploader.uploadFile(file.toPath().toString(),artistId + "-" + songId + ".mp3", "/songUploaded/");
 		ftpUploader.disconnect();
 		System.out.println("Done");
-
+		File fff = new File("localhost/songUploaded/"+fileName);
+		SongEncrypt ecrypt = new SongEncrypt();
 		return fileName;
 
 	}
