@@ -24,8 +24,6 @@ public class Mp3Uploader {
 		String fileName = ftpUploader.uploadFile(file.toPath().toString(),artistId + "-" + songId + ".mp3", "/songUploaded/");
 		ftpUploader.disconnect();
 		System.out.println("Done");
-		File fff = new File("localhost/songUploaded/"+fileName);
-		SongEncrypt ecrypt = new SongEncrypt();
 		return fileName;
 
 	}

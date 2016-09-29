@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.blackparty.syntones.core.ArtistWordBankProcess;
 import com.blackparty.syntones.core.ID3Extractor;
 import com.blackparty.syntones.core.LyricsExtractor;
+import com.blackparty.syntones.core.SongEncryptDecrypt;
 import com.blackparty.syntones.core.SongWordBankProcess;
 import com.blackparty.syntones.core.Summarize;
 import com.blackparty.syntones.core.Tagger;
@@ -221,7 +222,7 @@ public class AddSongController {
 			System.out.println(multiPartFile.getOriginalFilename());
 			File file = new File(multiPartFile.getOriginalFilename());
 			multiPartFile.transferTo(file);
-			System.out.println("file name: " + file.getName());
+			/*System.out.println("file name: " + file.getName());
 			// FileCopy fc = new FileCopy();
 			Song song = null;
 			// boolean flag = fc.copyFileUsingFileStreams(file);
@@ -246,7 +247,12 @@ public class AddSongController {
 				session.setAttribute("songTitle", song.getSongTitle());
 				session.setAttribute("file", file);
 				
-			}
+				SongEncryptDecrypt sed = new SongEncryptDecrypt();
+				sed.decrypt("C:/Users/YLaya/Desktop/downloaded/1-1.mp3.crypt");
+			}*/
+			SongEncryptDecrypt sed = new SongEncryptDecrypt();
+			File fff = new File("C:/Users/YLaya/Desktop/downloaded/1-1.mp3.crypt");
+			sed.decrypt(fff);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

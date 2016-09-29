@@ -132,6 +132,7 @@ public class NavigationEndpoint {
 					"Artist/Song not found");
 			return mav;*/
 		}
+		sr.setSrm(searchResult);
 		
 		return sr;
 	}
