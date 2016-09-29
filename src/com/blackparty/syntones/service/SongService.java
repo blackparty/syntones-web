@@ -1,20 +1,22 @@
-package com.blackparty.syntones.service;
+	package com.blackparty.syntones.service;
 
 
 
 import java.util.ArrayList;
 import java.io.File;
-
 import java.io.File;
-
 import java.util.ArrayList;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.blackparty.syntones.DAO.SongDAO;
+
+import com.blackparty.syntones.model.SearchModel;
+
 import com.blackparty.syntones.model.Artist;
+
 import com.blackparty.syntones.model.Song;
 
 @Service
@@ -34,6 +36,7 @@ public class SongService {
 
 	public List<Long>getAllSongsByArtist(Artist artist)throws Exception{
 		return songDao.getAllSongByArtist(artist);
+
 	}
 
 	public List<Song> getAllSongs() throws Exception{
@@ -44,5 +47,12 @@ public class SongService {
 	public Song getSong(long songId)throws Exception{
 		return songDao.getSong(songId);
 	}
-
+	
+	public void updateBatchAllSongs(List<Song> songs)throws Exception{
+		songDao.updateBatchAllSongs(songs);
+	}
+	
+	public ArrayList<Song> getSongs(ArrayList<SearchModel> model){
+		return songDao.getSongs(model);
+	}
 }

@@ -2,16 +2,20 @@ package com.blackparty.syntones.DAO;
 
 
 
-import java.util.List;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.StatelessSession;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackparty.syntones.model.Artist;
+import com.blackparty.syntones.model.SearchModel;
 
 @Repository
 @Transactional
@@ -61,5 +65,28 @@ public class ArtistDAO {
 		session.flush();
 		session.close();
 		return result;
+	}
+
+	public void updateBatchAllArtist(List<Artist> artists) throws Exception{
+		StatelessSession session = sf.openStatelessSession();
+		Transaction trans = session.beginTransaction();
+		for(Artist a:artists){
+			session.update(a);
+		}
+		trans.commit();
+		session.close();
+	}
+	
+	public ArrayList<Artist> getArtists(ArrayList<SearchModel> model) {
+		Session session = sf.openSession();
+		ArrayList<Artist> artists = new ArrayList();
+		for (SearchModel sm : model) {
+			Query query = session
+					.createQuery("from Artist where artistId =:id");
+			query.setLong("id", sm.getId());
+			Artist artist = (Artist) query.uniqueResult();
+			artists.add(artist);
+		}
+		return artists;
 	}
 }

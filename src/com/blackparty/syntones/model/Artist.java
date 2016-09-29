@@ -22,7 +22,10 @@ public class Artist {
 	@Column(name="artist_name")
 	private String artistName;
 	
-	
+	@Column(name="vector_space" , columnDefinition = "text")
+	private String vectorSpace;
+
+
 	public Artist() {
 		super();
 	}
@@ -47,6 +50,14 @@ public class Artist {
 
 	public void setArtistName(String artistName) {
 		this.artistName = artistName;
+	}
+	
+	public String getVectorSpace() {
+		return vectorSpace;
+	}
+
+	public void setVectorSpace(String vectorSpace) {
+		this.vectorSpace = vectorSpace;
 	}
 
 	@Override

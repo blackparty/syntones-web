@@ -42,6 +42,9 @@ public class Song {
 
 	@Transient
 	private int distance;
+	
+	@Column(name = "vector_space", columnDefinition = "text")
+	private String vectorSpace;
 
 	@Transient
 	private File file;
@@ -145,12 +148,21 @@ public class Song {
 	}
 	
 	
+
 	public boolean isFlag() {
 		return flag;
 	}
 
 	public void setFlag(boolean flag) {
 		this.flag = flag;
+	}
+	
+	public String getVectorSpace() {
+		return vectorSpace;
+	}
+
+	public void setVectorSpace(String vectorSpace) {
+		this.vectorSpace = vectorSpace;
 	}
 
 	@Override

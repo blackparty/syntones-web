@@ -46,14 +46,11 @@ import org.springframework.http.MediaType;
 @RestController
 @Component
 public class NavigationEndpoint {
-	@Autowired
-	private SongService songService;
-	@Autowired
-	private PlaylistService playlistService;
-	@Autowired
-	private PlaylistSongService playlistSongService;
-	
-	@Autowired ArtistService artistService;
+	@Autowired	private SongService songService;
+	@Autowired	private PlaylistService playlistService;
+	@Autowired	private PlaylistSongService playlistSongService;
+	@Autowired 	private ArtistService artistService;
+
 	
 	@RequestMapping(value="/getAllArtists",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ArtistResponse getAllArtist(){
@@ -73,8 +70,6 @@ public class NavigationEndpoint {
 		artistResponse.setMessage(message);
 		return artistResponse;
 	}
-	
-	
 	
 	@RequestMapping(value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public SearchResponse search(@RequestBody String searchString) {
