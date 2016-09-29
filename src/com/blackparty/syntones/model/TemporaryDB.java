@@ -1,5 +1,8 @@
 package com.blackparty.syntones.model;
 
+
+import java.util.Date;
+
 import javax.persistence.*;
 
 @Entity
@@ -16,6 +19,9 @@ public class TemporaryDB {
 	@Column(name = "song_id")
 	private long song_id;
 
+	@Column(name="played_date",nullable = true)
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date date;
 	public TemporaryDB() {
 		super();
 	}
@@ -43,4 +49,14 @@ public class TemporaryDB {
 		this.song_id = song_id;
 	}
 
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	
+	
 }

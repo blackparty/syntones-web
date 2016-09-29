@@ -1,19 +1,18 @@
 package com.blackparty.syntones.DAO;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.type.LongType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.blackparty.syntones.model.Playlist;
-import com.blackparty.syntones.model.PlaylistSong;
 import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.model.User;
 import com.blackparty.syntones.service.PlaylistSongService;
@@ -33,6 +32,17 @@ public class PlaylistDAO {
 	@Autowired
 	PlaylistSongService playlistSongService;
 
+	
+	public void updateLastPlayedPlaylist(long playlistId,Timestamp lastPlayed)throws Exception{
+		Session session = sessionFactory.openSession();
+		Query query = session.createQuery("update Playlist set lastPlayed =:date where playlistId =:id");
+		query.setTimestamp("date", lastPlayed);
+		query.setLong("id", playlistId);
+		query.executeUpdate();
+		session.flush();
+		session.close();
+	}
+	
 	public void removePlaylist(Playlist playlist) throws Exception {
 		// deleting songs on the playlist first;
 		playlistSongService.removePlaylist(playlist);
@@ -42,12 +52,14 @@ public class PlaylistDAO {
 		query.executeUpdate();
 		session.flush();
 		session.close();
-
 	}
 
 	public long addGeneratedPlaylist(Playlist playlist) throws Exception {
 		System.out.println("SAVING GENERATED PLAYLIST TO DB.");
 		User fetchedUser = userService.getUser(playlist.getUser());
+		if(playlist.getPlaylistName().length() == 0){
+			playlist.setPlaylistName("My Playlist");
+		}
 		playlist.setUser(fetchedUser);
 		Session session = sessionFactory.openSession();
 		long playlistId = (long) session.save(playlist);
@@ -69,7 +81,7 @@ public class PlaylistDAO {
 
 	public Playlist getSongsFromPlaylist(long id) throws Exception {
 		Session session = sessionFactory.openSession();
-		Query query = session.createSQLQuery("select song_id from playlist_song b where b.playlist_id =:id");
+		Query query = session.createSQLQuery("select song_id from playlist_song_tbl b where b.playlist_id =:id").addScalar("song_id",LongType.INSTANCE);
 		query.setLong("id", id);
 		List<String> songId = new ArrayList<String>();
 		List<Song> songList = new ArrayList<Song>();
@@ -95,7 +107,7 @@ public class PlaylistDAO {
 		// System.out.println("getting playlist for user:
 		// "+fetchedUser.getUserId());
 		Session session = sessionFactory.openSession();
-		Query query = session.createQuery("from Playlist b where b.user.userId=:id");
+		Query query = session.createQuery("from Playlist b where b.user.userId=:id order by b.lastPlayed desc");
 		query.setLong("id", fetchedUser.getUserId());
 		List<Playlist> playlists = query.list();
 		session.flush();

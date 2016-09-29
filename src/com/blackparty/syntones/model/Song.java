@@ -49,6 +49,9 @@ public class Song {
 	@Transient
 	private File file;
 
+	@Column(nullable=false,name="flag")
+	private boolean flag;
+	
 	// connects the song to the artist class
 
 	@ManyToOne(optional = false)
@@ -145,6 +148,14 @@ public class Song {
 	}
 	
 	
+
+	public boolean isFlag() {
+		return flag;
+	}
+
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
 	
 	public String getVectorSpace() {
 		return vectorSpace;

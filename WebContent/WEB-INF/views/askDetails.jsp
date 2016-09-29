@@ -4,14 +4,20 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Ask Details</title>
 </head>
 <body>
 	<p>${system_message}</p>
 	<form action="checkDetails" method="post">
-		<input type="text" name="songTitle" placeholder="song title"/>
-		<input type="text" name="artistName" placeholder="artist name"/>
+		<input type="text" name="songTitle" value=${ songTitle } placeholder="song title"/>
+		<input type="text" name="artistName" value=${ artistName } placeholder="artist name"/>
 		<input type="submit" value="validate"> 
 	</form>
+	<form action="saveSong" method="post">
+		<input type="text" name="songTitle" value=${ songTitle } hidden="true" placeholder="song title"/>
+		<input type="text" name="artistName" value=${ artistName } hidden="true" placeholder="artist name"/>
+		<input type="submit" value="save"> 
+	</form>
+	<a href="index"><button>Cancel</button></a>
 </body>
 </html>

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,7 +22,7 @@ public class LyricsExtractor {
         this.songLyricsURL = mySongLyricsURL;
     }
     
-    public List<String> getSongLyrics( String band, String songTitle) throws IOException {
+    public List<String> getSongLyrics( String band, String songTitle) throws IOException,HttpStatusException {
      List<String> lyrics= new ArrayList<String>();
     
      Document doc = Jsoup.connect(songLyricsURL+ "/"+band.replace(" ", "-").toLowerCase()+"/"+songTitle.replace(" ", "-").toLowerCase()+"-lyrics/").get();

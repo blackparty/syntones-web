@@ -4,12 +4,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<title>Add Song</title>
 </head>
 <body>
 	<form action="readMp3" method="POST" enctype="multipart/form-data" action="upload">
 		File to upload: <input type="file" name="file" /><br>
 		<input type="submit" name="action" value="read file" /> 
 	</form>
+	<a href="index"><button>Cancel</button></a>
 </body>
 </html>

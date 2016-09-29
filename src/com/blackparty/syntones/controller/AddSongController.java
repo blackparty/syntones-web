@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.http.HttpException;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,19 +103,23 @@ public class AddSongController {
 		try {
 			TrackSearcher ts = new TrackSearcher();
 			songResult = ts.search(song);
-			System.out.println("SONG RESULT! = " + songResult);
+			if(songResult != null){
+				System.out.println("SONG RESULT! = " + songResult);
+				mav.addObject("system_message", "details has been validated.");
+				mav.addObject("artistName", songResult.getArtistName());
+				mav.addObject("songTitle", songResult.getSongTitle());
+				mav.setViewName("mp3Details");
+			}else{
+				mav.addObject("artistName",artistName);
+				mav.addObject("songTitle", songTitle);
+				mav.addObject("system_message", "an error occured, click \"save\" ");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			mav.addObject("system_message", "Exception occured.");
 			mav.setViewName("askDetails");
 			return mav;
 		}
-		mav.addObject("system_message", "details has been validated.");
-		mav.addObject("artistName", songResult.getArtistName());
-		mav.addObject("songTitle", songResult.getSongTitle());
-		mav.setViewName("mp3Details");
-		HttpSession session = request.getSession();
-		session.setAttribute("song", songResult);
 		return mav;
 	}
 
@@ -132,7 +137,13 @@ public class AddSongController {
 		Song song = new Song();
 		song.setSongTitle(songTitle);
 		song.setArtistName(artistName);
-		song.setLyrics((List) request.getSession().getAttribute("lyrics"));
+		List<String> lyrics = (List) request.getSession().getAttribute("lyrics");
+		if(lyrics != null){
+			song.setLyrics(lyrics);
+			song.setFlag(true);
+		}else{
+			song.setFlag(false);
+		}
 		song.setFile((File) request.getSession().getAttribute("file"));
 		System.out.print("Saving song to the server...");
 		// save song to the database
@@ -205,18 +216,28 @@ public class AddSongController {
 				System.out.println("cant read any tags on the given file");
 				session.setAttribute("file", file);
 			} else {
+				
+				//fetch lyrics
 				request.getSession().setAttribute("file", file);
+				System.out.println("Reading tags successful.");
 				mav.addObject("system_message", "reading on the mp3 tags is successful.");
 				mav.addObject("artistName", song.getArtistName());
 				mav.addObject("songTitle", song.getSongTitle());
-				mav.setViewName("mp3Details");
+				LyricsExtractor lyricsExtractor = new LyricsExtractor();
+				List<String> lyrics = lyricsExtractor.getSongLyrics(song.getArtistName(), song.getSongTitle());
+				mav.setViewName("showLyrics");
 				System.out.println("saving song and file to session.");
 				System.out.println(song.displayTitleAndArtist());
-				session.setAttribute("artistName", song.getArtistName());
-				session.setAttribute("songTitle", song.getSongTitle());
+				mav.addObject("lyrics", lyrics);
 				session.setAttribute("file", file);
 			}
-		} catch (Exception e) {
+		}catch(HttpStatusException e){
+			System.out.println("Attempting to get lyrics to the internet had failed.");
+			mav.addObject("system_message", "Attempting to get lyrics to the internet had failed.");
+			mav.setViewName("askDetails");
+		} 
+		
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		return mav;
