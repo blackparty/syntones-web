@@ -1,6 +1,7 @@
 package com.blackparty.syntones.endpoint;
 
 import java.io.File;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +27,7 @@ import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.model.SongLine;
 import com.blackparty.syntones.model.Tag;
 import com.blackparty.syntones.model.TagSong;
+import com.blackparty.syntones.model.TemporaryDB;
 import com.blackparty.syntones.response.GeneratePlaylistResponse;
 import com.blackparty.syntones.response.LibraryResponse;
 import com.blackparty.syntones.response.ListenResponse;
@@ -35,6 +38,7 @@ import com.blackparty.syntones.response.RemoveToPlaylistResponse;
 import com.blackparty.syntones.response.SongListResponse;
 import com.blackparty.syntones.response.TagsResponse;
 import com.blackparty.syntones.service.ArtistService;
+import com.blackparty.syntones.service.PlayedSongsService;
 import com.blackparty.syntones.service.PlaylistService;
 import com.blackparty.syntones.service.PlaylistSongService;
 import com.blackparty.syntones.service.SongLineService;
@@ -55,75 +59,78 @@ public class MusicEndpoint {
 	private TagService tagService;
 	@Autowired
 	private TagSongService tagSongService;
-	@Autowired private ArtistService artistService;
-	@Autowired private SongLineService songLineService;
-	
-	
-	
+	@Autowired
+	private ArtistService artistService;
+	@Autowired
+	private SongLineService songLineService;
+	@Autowired
+	private PlayedSongsService playedSongsService;
+
 	@RequestMapping(value = "/generatePlaylistByArtist", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public GeneratePlaylistResponse generatePlaylistByArtist(@RequestBody String artistName) {
 		GeneratePlaylistResponse generatePlaylistResponse = new GeneratePlaylistResponse();
-		System.out.println("Received request to generate playlist for : "+artistName);
+		System.out.println("Received request to generate playlist for : " + artistName);
 		Message message = new Message();
-		try{
-			//getting all songs of the artist
+		try {
+			// getting all songs of the artist
 			artistName = artistName.replace("\"", "");
 			Artist artist = artistService.getArtist(artistName);
-			List<Long> artistSongIds = songService.getAllSongsByArtist(artist);	List<SongLine> songLines = songLineService.getAllLines();
+			List<Long> artistSongIds = songService.getAllSongsByArtist(artist);
+			List<SongLine> songLines = songLineService.getAllLines();
 			ArrayList<Long> songIds = new ArrayList<>();
 			HashMap<Long, Long> map = new HashMap<>();
-			for(long s: artistSongIds){
-				System.out.println("Artist song id: "+s);
+			for (long s : artistSongIds) {
+				System.out.println("Artist song id: " + s);
 			}
-			for(int i=0;i<songLines.size();i++){
-				for(int j=0; j<artistSongIds.size();j++){
-					if(songLines.get(i).getSongId() == artistSongIds.get(j)){
+			for (int i = 0; i < songLines.size(); i++) {
+				for (int j = 0; j < artistSongIds.size(); j++) {
+					if (songLines.get(i).getSongId() == artistSongIds.get(j)) {
 						System.out.println("hit!!");
 						long id1 = 0;
 						long id2 = 0;
-						if(i == 0){
-							id1 = songLines.get(i+1).getSongId();
-						}else{
-							id1 = songLines.get(i+1).getSongId();
-							id2 = songLines.get(i-1).getSongId();
+						if (i == 0) {
+							id1 = songLines.get(i + 1).getSongId();
+						} else {
+							id1 = songLines.get(i + 1).getSongId();
+							id2 = songLines.get(i - 1).getSongId();
 						}
-						if(!map.containsKey(id1)){
-							map.put(id1,id1);
+						if (!map.containsKey(id1)) {
+							map.put(id1, id1);
 							songIds.add(id1);
-							System.out.println("Adding song :"+id1);
-						} 
-						if(!map.containsKey(id2)){
-							map.put(id2,id2);
+							System.out.println("Adding song :" + id1);
+						}
+						if (!map.containsKey(id2)) {
+							map.put(id2, id2);
 							songIds.add(id2);
-							System.out.println("Adding song :"+id2);
+							System.out.println("Adding song :" + id2);
 						}
 					}
 				}
 			}
-			//adding artist's song
+			// adding artist's song
 			List<Song> songList = new ArrayList<>();
 			int counter = 0;
-			if(!songIds.isEmpty()){
-				for(Long id:songIds){
-					if(counter < 10){
+			if (!songIds.isEmpty()) {
+				for (Long id : songIds) {
+					if (counter < 10) {
 						Song song = songService.getSong(id);
 						songList.add(song);
 					}
 					counter++;
 				}
 				System.out.println("Generating Songs successful.");
-				for(Song s:songList){
+				for (Song s : songList) {
 					System.out.println(s.toString());
 				}
 				message.setMessage("Generating Songs successful.");
 				message.setFlag(true);
 				generatePlaylistResponse.setSongs(songList);
-			}else{
+			} else {
 				message.setFlag(false);
 				System.out.println("List is empty. No lists of songs generated.");
 				message.setMessage("List is empty. No lists of songs generated.");
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			message.setFlag(false);
 			System.out.println("error happend on the web service");
@@ -134,7 +141,7 @@ public class MusicEndpoint {
 		generatePlaylistResponse.setMessage(message);
 		return generatePlaylistResponse;
 	}
-	
+
 	@RequestMapping(value = "/saveGeneratedPlaylist", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public GeneratePlaylistResponse saveGeneratedPlaylist(@RequestBody Playlist playlist) {
 		System.out
@@ -165,10 +172,6 @@ public class MusicEndpoint {
 		generatedPlaylistResponse.setMessage(message);
 		return generatedPlaylistResponse;
 	}
-	
-	
-
-	
 
 	@RequestMapping(value = "/generatePlaylistByTags", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public GeneratePlaylistResponse generatePlaylist(@RequestBody String[] tags) {
@@ -243,30 +246,62 @@ public class MusicEndpoint {
 	}
 
 	@RequestMapping(value = "/listen", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ListenResponse listen(@RequestBody Song song) {
+	public ListenResponse listen(@RequestBody List<TemporaryDB> temporaryDB) {
 		ListenResponse listenResponse = new ListenResponse();
-		//capture user's date and time when the music is played.
-		DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-		Date dateObject = new Date();
-		
-		
-		// insert service that will fetch recommended songs to be added on
-		// listenresponse
+		// capture user's date and time when the music is played.
 
+		Message message = new Message();
+		try {
+			Date dateObject = new Date();
+			DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+			String currentTime = df.format(dateObject);
+			java.sql.Date sqlDate = new java.sql.Date(df.parse(currentTime).getTime());
+			System.out.println(df.format(dateObject));
+			if (temporaryDB != null) {
+				message.setMessage("I GOT THE SONG ID AND THE USER ID!");
+				// setting time and date to each song
+				for (TemporaryDB a : temporaryDB) {
+					System.out.println("Listen: \nSong ID: " + a.getSong_id() + "User ID: " + a.getUser_id());
+					a.setDate(dateObject);
+				}
+				playedSongsService.saveTemporaryDB(temporaryDB);
+
+			} else {
+				message.setMessage("NO SONG ID AND USER ID<|3");
+			}
+		} catch (DataIntegrityViolationException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		message.setFlag(true);
+		listenResponse.setMessage(message);
 		return listenResponse;
+
 	}
 
 	@RequestMapping(value = "/listenPlaylist", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ListenResponse listen(@RequestBody Playlist playlist) {
-		System.out.println("Received request to listen for playlist: " + playlist.getPlaylistId() + " from: "
-				+ playlist.getUser().getUsername());
+
 		ListenResponse lResponse = new ListenResponse();
+		Message message = new Message();
 		// insert service that will fetch recommended songs to be added on
 		// listenresponse
-		DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-		Date dateObject = new Date();
-		System.out.println("Date and time: " + dateObject);
-
+		try {
+			Date dateObject = new Date();
+			Timestamp timeStamp = new Timestamp(dateObject.getTime());
+			System.out.println("Received request to listen for playlist: " + playlist.getPlaylistId() + " from: "
+					+ playlist.getUser().getUsername() + " Date and time: " + timeStamp);
+			playlistService.updateLastPlayedPlaylist(playlist.getPlaylistId(),timeStamp);
+			message.setFlag(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			message.setFlag(false);
+			message.setMessage("Exception occured on the web service.");
+			lResponse.setMessage(message);
+			return lResponse;
+		}
+		lResponse.setMessage(message);
 		return lResponse;
 	}
 
@@ -322,13 +357,15 @@ public class MusicEndpoint {
 		return libraryResponse;
 	}
 
-	@RequestMapping(value = "/playPlaylist")
-	public PlaylistSongsResponse playPlaylist(@RequestBody long id) {
+	@RequestMapping(value = "/playPlaylist", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	public PlaylistSongsResponse playPlaylist(@RequestBody Playlist playlist) {
+		System.out.println("Received request to play a playlist: " + playlist.getPlaylistId() + " from "
+				+ playlist.getUser().getUsername());
 		PlaylistSongsResponse ppResponse = new PlaylistSongsResponse();
-		Playlist playlist = new Playlist();
+		Playlist fetchedPlaylist = new Playlist();
 		Message message = new Message();
 		try {
-			playlist = playlistService.getSongsFromPlaylist(id);
+			fetchedPlaylist = playlistService.getSongsFromPlaylist(playlist.getPlaylistId());
 		} catch (Exception e) {
 			e.printStackTrace();
 			message.setFlag(false);

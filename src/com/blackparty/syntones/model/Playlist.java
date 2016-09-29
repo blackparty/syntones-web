@@ -1,5 +1,10 @@
 package com.blackparty.syntones.model;
 
+
+
+
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -13,6 +18,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 @Entity
@@ -38,9 +45,14 @@ public class Playlist {
 	@JoinColumn(referencedColumnName = "user_id")
 	private User user;
 
+	@Column(name="last_played",nullable = true)
+	private Timestamp lastPlayed;
+	
+	
 	@Transient
 	private long songId;
 
+	
 	public Playlist(){
 		
 	}
@@ -111,15 +123,25 @@ public class Playlist {
 	}
 
 	
-	
-	
-	
 	public long[] getSongIds() {
 		return songIds;
 	}
 
 	public void setSongIds(long[] songIds) {
 		this.songIds = songIds;
+	}
+	
+	
+	
+	
+
+
+	public Timestamp getLastPlayed() {
+		return lastPlayed;
+	}
+
+	public void setLastPlayed(Timestamp lastPlayed) {
+		this.lastPlayed = lastPlayed;
 	}
 
 	@Override

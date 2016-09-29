@@ -57,7 +57,6 @@ public class SongDAO {
 		
 	}
 
-
 	public Song getSong(long songId)throws Exception{
 		Session session = sf.openSession();
 		System.out.println("Querying song for :"+songId);
@@ -66,6 +65,7 @@ public class SongDAO {
 		Song song = (Song)q.uniqueResult();
 		session.flush();
 		session.close();
+		song.setArtist(as.getArtist(song.getArtist().getArtistId()));
 		return song;
 	}
 	
@@ -75,6 +75,9 @@ public class SongDAO {
 		List<Song> songList = q.list();
 		session.flush();
 		session.close();
+		for(Song s:songList){
+			s.setArtist(as.getArtist(s.getArtist().getArtistId()));
+		}
 		return songList;
 	}
 

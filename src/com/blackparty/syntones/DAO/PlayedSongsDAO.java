@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.blackparty.syntones.model.OneItemSet;
 import com.blackparty.syntones.model.OneItemSetCount;
 import com.blackparty.syntones.model.PlayedSongs;
+import com.blackparty.syntones.model.TemporaryDB;
 import com.blackparty.syntones.model.ThreeItemSet;
 import com.blackparty.syntones.model.TwoItemSet;
 import com.blackparty.syntones.service.PlayedSongsService;
@@ -25,6 +26,24 @@ public class PlayedSongsDAO {
 	@Autowired
 	private PlayedSongsService playedSongsService;
 
+	
+	
+	// INSERTS
+		public void saveTemporaryDB(List<TemporaryDB> temporaryDB) {
+			Session session = sf.openSession();
+
+			for (TemporaryDB a : temporaryDB) {
+
+				a.getSong_id();
+				a.getUser_id();
+				session.save(a);
+				session.flush();
+			}
+
+			session.close();
+		}
+
+	
 	public void savePlayedSongs(PlayedSongs playedSongs) {
 		Session session = sf.openSession();
 

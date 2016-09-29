@@ -9,7 +9,6 @@ public class ListenResponse {
 	private List<Song> recommendedSongs;
 	private Message message;
 	
-	
 	public ListenResponse(){
 		
 		

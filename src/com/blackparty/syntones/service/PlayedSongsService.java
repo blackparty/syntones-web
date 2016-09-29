@@ -10,6 +10,7 @@ import com.blackparty.syntones.DAO.PlayedSongsDAO;
 import com.blackparty.syntones.DAO.UserDAO;
 import com.blackparty.syntones.model.OneItemSetCount;
 import com.blackparty.syntones.model.PlayedSongs;
+import com.blackparty.syntones.model.TemporaryDB;
 import com.blackparty.syntones.model.ThreeItemSet;
 import com.blackparty.syntones.model.TwoItemSet;
 
@@ -18,12 +19,20 @@ public class PlayedSongsService {
 	@Autowired
 	private PlayedSongsDAO playedSongsDAO;
 
+	
+	
+	
+	public void saveTemporaryDB(List<TemporaryDB> temporaryDB){
+		playedSongsDAO.saveTemporaryDB(temporaryDB);
+	}
+	
 	public void savePlayedSongs(PlayedSongs playedSongs) {
 
 		playedSongsDAO.savePlayedSongs(playedSongs);
 
 	}
 
+	
 	public List<PlayedSongs> getPlayedSongs() {
 
 		return playedSongsDAO.getPlayedSongs();
