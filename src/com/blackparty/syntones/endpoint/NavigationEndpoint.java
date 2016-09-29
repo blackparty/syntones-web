@@ -100,39 +100,9 @@ public class NavigationEndpoint {
 				abservice.fetchAllWordBank(), sbservice.fetchAllWordBank(),
 				songService.getAllSongs(), artistService.getAllArtists());
 
-		List<Song> songsPrio = null;
-		List<Song> songs = null;
+		List<Song> songs = songService.getSongs(searchResult.getSongs());
 		List<Artist> artists = artistService.getArtists(searchResult.getArtists());
-
-		if (!searchResult.isArtistNan() && !searchResult.isSongNan()) {
-			for (Song song : songService.getSongs(searchResult.getSongs())) {
-				for (Artist artist : artists) {
-					if (song.getArtist().getArtistId() == artist.getArtistId()) {
-						songsPrio.add(song);
-					} else {
-						songs.add(song);
-					}
-
-				}
-
-			}
-		/*	request.getSession().setAttribute("resultSongPrio", songsPrio);
-			request.getSession().setAttribute("resultArtist", artists);
-			request.getSession().setAttribute("resultSong", songs);
-			return mav;*/
-		} else if (searchResult.isSongNan() && !searchResult.isArtistNan()) {
-			/*request.getSession().setAttribute("resultArtist", artists);
-			return mav;*/
-		} else if (searchResult.isArtistNan() && !searchResult.isSongNan()) {
-		/*	
-			request.getSession().setAttribute("resultSongPrio", ss.getSongs(searchResult.getSongs()));
-			return mav;*/
-		} else {
-			/*request.getSession().setAttribute("resultMessage",
-					"Artist/Song not found");
-			return mav;*/
-		}
-		sr.setSrm(searchResult);
+		sr.setSongs(songs);
 		
 		return sr;
 	}
