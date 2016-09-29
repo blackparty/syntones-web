@@ -29,7 +29,7 @@ public class SearchProcess {
 		int[] vector_arr_artist = null;
 
 		SearchResultModel result = new SearchResultModel();
-		
+		System.out.println("word entered >>>" + searchWord);
 		
 		// song;
 		document_count_song = songs.size();
@@ -78,7 +78,7 @@ public class SearchProcess {
 			});
 			System.out.println("\n\n === RESULTS ====");
 			for (int i = 0; i < smodel.size(); i++) {
-				if (smodel.get(i).getDegrees() < 90.0) {
+				if (smodel.get(i).getDegrees() < 85.0) {
 					sresult.add(smodel.get(i));
 					System.out.println("SongID : " + smodel.get(i).getId()
 							+ "    Degrees :" + smodel.get(i).getDegrees());
@@ -137,11 +137,10 @@ public class SearchProcess {
 			});
 			System.out.println("\n\n === RESULTS ====");
 			for (int i = 0; i < amodel.size(); i++) {
-				if (amodel.get(i).getDegrees() < 90.0) {
+				if (amodel.get(i).getDegrees() < 85.0) {
 					aresult.add(amodel.get(i));
 					System.out.println("ArtistID : " + amodel.get(i).getId()
 							+ "    Degrees :" + amodel.get(i).getDegrees());
-				}else{
 				}
 			}
 
