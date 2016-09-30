@@ -78,7 +78,7 @@ public class SearchProcess {
 			});
 			System.out.println("\n\n === RESULTS ====");
 			for (int i = 0; i < smodel.size(); i++) {
-				if (smodel.get(i).getDegrees() < 85.0) {
+				if (smodel.get(i).getDegrees() < 80.0) {
 					sresult.add(smodel.get(i));
 					System.out.println("SongID : " + smodel.get(i).getId()
 							+ "    Degrees :" + smodel.get(i).getDegrees());
@@ -89,15 +89,19 @@ public class SearchProcess {
 
 		}
 
+		
+		
 		// artist
 		document_count_artist = artists.size();
-		System.out.println("song size" + document_count_artist);
+		System.out.println("artist size" + document_count_artist);
 		token_count_artist = artist_wb.size();
 		vector_arr_artist = getQueryWord(searchWord, artist_wb);
 		amodel = (ArrayList<SearchModel>) toMatrixList(null,artists,"artists");
 		idf_artist = getIDF(amodel, document_count_artist);
+		System.out.println("artist word bank size" + token_count_artist);
+		
 		step3_matrix_artist = step3(idf_artist, amodel, document_count_artist,
-				token_count_artist);
+				artist_wb.size());
 		step4_matrix_artist = step4(vector_arr_artist, idf_artist);
 
 		for (int i = 0; i < step3_matrix_artist.length; i++) {
@@ -137,7 +141,7 @@ public class SearchProcess {
 			});
 			System.out.println("\n\n === RESULTS ====");
 			for (int i = 0; i < amodel.size(); i++) {
-				if (amodel.get(i).getDegrees() < 85.0) {
+				if (amodel.get(i).getDegrees() < 90.0) {
 					aresult.add(amodel.get(i));
 					System.out.println("ArtistID : " + amodel.get(i).getId()
 							+ "    Degrees :" + amodel.get(i).getDegrees());
@@ -228,11 +232,12 @@ public class SearchProcess {
 	public float[][] step3(float[] idf, List<SearchModel> array_model,
 			int docuCount, int token_count) {
 		System.out.println("Step 3!");
+		System.out.println("artist word bank size" + token_count);
 		int[][] matrix = new int[docuCount][];
 		for (int i = 0; i < docuCount; i++) {
 			matrix[i] = array_model.get(i).getVector();
 		}
-		float[][] step3_matrix = new float[docuCount][matrix[0].length];
+		float[][] step3_matrix = new float[docuCount][token_count];
 		for (int i = 0; i < docuCount; i++) {
 			for (int j = 0; j < token_count; j++) {
 				float temp = (float) matrix[i][j] * (float) idf[j];
@@ -277,6 +282,7 @@ public class SearchProcess {
 
 	public List<SearchModel> toMatrixList(ArrayList<Song> songs,
 			List<Artist> artists, String str) {
+		System.out.println("to matrix >> ");
 		ArrayList<SearchModel> array_model = new ArrayList<SearchModel>();
 		if (str.equalsIgnoreCase("song")) {
 			for (int i = 0; i < songs.size(); i++) {
@@ -287,7 +293,8 @@ public class SearchProcess {
 				array_model.add(obj);
 			}
 			return array_model;
-		} else {
+		} 
+		if(str.equalsIgnoreCase("artists")) {
 			for (int i = 0; i < artists.size(); i++) {
 				int[] array = getArray(artists.get(i).getVectorSpace());
 				SearchModel obj = new SearchModel();
@@ -297,6 +304,7 @@ public class SearchProcess {
 			}
 			return array_model;
 		}
+		return null;
 	}
 
 	public int[] getArray(String aString) {
