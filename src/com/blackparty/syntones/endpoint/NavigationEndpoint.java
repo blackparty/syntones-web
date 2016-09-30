@@ -57,12 +57,12 @@ public class NavigationEndpoint {
 	@Autowired
 	private PlaylistSongService playlistSongService;
 	@Autowired
-	SongWordBankService sbservice;
-
+	private ArtistService artistService;
 	@Autowired
-	ArtistWordBankService abservice;
+	private SongWordBankService sbservice;
+	@Autowired
+	private ArtistWordBankService abservice;
 	
-	@Autowired ArtistService artistService;
 	
 	@RequestMapping(value="/getAllArtists",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ArtistResponse getAllArtist(){
@@ -83,9 +83,7 @@ public class NavigationEndpoint {
 		return artistResponse;
 	}
 	
-	
-	
-	@RequestMapping(value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/search",method = RequestMethod.POST ,produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public SearchResponse search(@RequestBody String searchString) throws Exception {
 		// wala pa ni siya gamit
 		System.out.println("recived search request");
@@ -93,10 +91,9 @@ public class NavigationEndpoint {
 		Message message = new Message();
 		message.setMessage("search request \"" + searchString + "\"has been received.");
 		sr.setMessage(message);
-		
-
+		System.out.println("======================= " + searchString + " =======================" + " -ENDPOINT");
 		SearchProcess sp = new SearchProcess();
-		SearchResultModel searchResult = sp.SearchProcess(searchString,
+		SearchResultModel searchResult = sp.SearchProcess(searchString.replace("\"", "").trim(),
 				abservice.fetchAllWordBank(), sbservice.fetchAllWordBank(),
 				songService.getAllSongs(), artistService.getAllArtists());
 
