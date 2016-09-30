@@ -19,7 +19,7 @@ public class ArtistWordBankService {
 		awbDao.updateWordBank(words);
 	}
 	
-	public ArrayList<String> fetchAllWordBank() throws Exception{
+	public List<String> fetchAllWordBank() throws Exception{
 		return awbDao.fetchAllWordBank();
 		
 	}
