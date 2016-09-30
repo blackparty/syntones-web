@@ -3,7 +3,9 @@ package com.blackparty.syntones.DAO;
 
 
 
+import java.util.ArrayList;
 import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackparty.syntones.model.Artist;
 import com.blackparty.syntones.model.SearchModel;
+import com.blackparty.syntones.model.Song;
 
 @Repository
 @Transactional
@@ -78,14 +81,14 @@ public class ArtistDAO {
 	
 	public List<Artist> getArtists(List<SearchModel> model) {
 		Session session = sf.openSession();
-		List<Artist> artists = null;
+		ArrayList<Artist> artists = new ArrayList<Artist>();
 		for (SearchModel sm : model) {
-			Query query = session
-					.createQuery("from Artist where artistId =:id");
+			Query query = session.createQuery("from Artist where artistId=:id");
 			query.setLong("id", sm.getId());
 			Artist artist = (Artist) query.uniqueResult();
 			artists.add(artist);
 		}
+		session.close();
 		return artists;
 	}
 }
