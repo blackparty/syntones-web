@@ -45,21 +45,64 @@ import com.blackparty.syntones.service.SongLineService;
 import com.blackparty.syntones.service.SongService;
 import com.blackparty.syntones.service.TagService;
 import com.blackparty.syntones.service.TagSongService;
+
 @RestController
 @Component
 public class MusicEndpoint {
-	@Autowired	private SongService songService;
-	@Autowired	private PlaylistService playlistService;
-	@Autowired	private PlaylistSongService playlistSongService;
-	@Autowired 	private TagService tagService;
-	@Autowired 	private TagSongService tagSongService;
-	@Autowired 	private PlayedSongsService playedSongsService;
-	@Autowired 	private ArtistService artistService;
-	@Autowired 	private SongLineService songLineService;
+	@Autowired
+	private SongService songService;
+	@Autowired
+	private PlaylistService playlistService;
+	@Autowired
+	private PlaylistSongService playlistSongService;
+	@Autowired
+	private TagService tagService;
+	@Autowired
+	private TagSongService tagSongService;
+	@Autowired
+	private PlayedSongsService playedSongsService;
+	@Autowired
+	private ArtistService artistService;
+	@Autowired
+	private SongLineService songLineService;
+
+	@RequestMapping(value = "/generatePlaylistByTags", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public GeneratePlaylistResponse generatePlaylistByTags(@RequestBody Tag tagObject) {
+		GeneratePlaylistResponse generatePlaylistResponse = new GeneratePlaylistResponse();
+		System.out.println("Received request to generate playlist for : ");
+		List<TagSong> tagsongs = new ArrayList<>();
+		Message message = new Message();
+		try {
+			System.out.println(tagObject.getTag());
+			tagsongs = tagSongService.getSongsByTags(tagObject.getTag());
+			ArrayList<Song> songs = new ArrayList<>();
+			for (TagSong ts : tagsongs) {
+				System.out.println(ts.toString());
+				Song song = songService.getSong(ts.getSongId());
+				songs.add(song);
+			}
+			for (Song s : songs) {
+				System.out.println(s.toStringFromDB());
+			}
+			if (songs.size() > 0) {
+				generatePlaylistResponse.setSongs(songs);
+				message.setFlag(true);
+				generatePlaylistResponse.setMessage(message);
+			} else {
+				message.setFlag(false);
+				message.setMessage("no songs can be found with the given tag(s)");
+				generatePlaylistResponse.setMessage(message);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return generatePlaylistResponse;
+	}
+
 	@RequestMapping(value = "/generatePlaylistByArtist", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public GeneratePlaylistResponse generatePlaylistByArtist(@RequestBody String artistName) {
 		GeneratePlaylistResponse generatePlaylistResponse = new GeneratePlaylistResponse();
-		System.out.println("Received request to generate playlist for : " + artistName);
+		System.out.println("Received request to generate playlist using artist: " + artistName);
 		Message message = new Message();
 		try {
 			// getting all songs of the artist
@@ -163,48 +206,13 @@ public class MusicEndpoint {
 		return generatedPlaylistResponse;
 	}
 
-	@RequestMapping(value = "/generatePlaylistByTags", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public GeneratePlaylistResponse generatePlaylist(@RequestBody String[] tags) {
-		GeneratePlaylistResponse generatePlaylistResponse = new GeneratePlaylistResponse();
-		System.out.println("Received request to generate playlist for : ");
-		List<TagSong> tagsongs = new ArrayList<>();
-		Message message = new Message();
-		try {
-			for (String s : tags) {
-				System.out.println(s);
-				tagsongs = tagSongService.getSongsByTags(s);
-			}
-			ArrayList<Song> songs = new ArrayList<>();
-			for (TagSong ts : tagsongs) {
-				System.out.println(ts.toString());
-				Song song = songService.getSong(ts.getSongId());
-				songs.add(song);
-			}
-			for (Song s : songs) {
-				System.out.println(s.toStringFromDB());
-			}
-			if (songs.size() > 0) {
-				generatePlaylistResponse.setSongs(songs);
-				message.setFlag(true);
-				generatePlaylistResponse.setMessage(message);
-			} else {
-				message.setFlag(false);
-				message.setMessage("no songs can be found with the given tag(s)");
-				generatePlaylistResponse.setMessage(message);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return generatePlaylistResponse;
-	}
-
 	@RequestMapping(value = "/getAllTags", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
 	public TagsResponse getAllTags() {
 		TagsResponse tagResponse = new TagsResponse();
-		List<Tag> tags = null;
+		List<String> fetchedTags;
 		Message message = new Message();
 		try {
-			tags = tagService.getAllTags();
+			fetchedTags = tagSongService.getAvailableTags();
 		} catch (Exception e) {
 			e.printStackTrace();
 			message.setMessage("Exception occured on the webservice");
@@ -212,46 +220,10 @@ public class MusicEndpoint {
 			tagResponse.setMessage(message);
 			return tagResponse;
 		}
-		tagResponse.setTags(tags);
+		tagResponse.setTags(fetchedTags);
 		message.setFlag(true);
 		tagResponse.setMessage(message);
 		return tagResponse;
-	}
-
-
-	@RequestMapping(value = "/generatePlaylistByTags", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public GeneratePlaylistResponse generatePlaylist(@RequestBody String tag) {
-		GeneratePlaylistResponse generatePlaylistResponse = new GeneratePlaylistResponse();
-		System.out.println("Received request to generate playlist for : ");
-		List<TagSong> tagsongs = new ArrayList<>();
-		Message message = new Message();
-		try {
-		
-				System.out.println(tag);
-				tagsongs = tagSongService.getSongsByTags(tag);
-			
-			ArrayList<Song> songs = new ArrayList<>();
-			for (TagSong ts : tagsongs) {
-				System.out.println(ts.toString());
-				Song song = songService.getSong(ts.getSongId());
-				songs.add(song);
-			}
-			for (Song s : songs) {
-				System.out.println(s.toStringFromDB());
-			}
-			if (songs.size() > 0) {
-				generatePlaylistResponse.setSongs(songs);
-				message.setFlag(true);
-				generatePlaylistResponse.setMessage(message);
-			} else {
-				message.setFlag(false);
-				message.setMessage("no songs can be found with the given tag(s)");
-				generatePlaylistResponse.setMessage(message);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return generatePlaylistResponse;
 	}
 
 	@RequestMapping(value = "/removePlaylist")
@@ -273,25 +245,24 @@ public class MusicEndpoint {
 
 	@RequestMapping(value = "/listen", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ListenResponse listen(@RequestBody List<TemporaryDB> temporaryDB) {
+
 		ListenResponse listenResponse = new ListenResponse();
 		// capture user's date and time when the music is played.
-
 		Message message = new Message();
 		try {
 			Date dateObject = new Date();
-			DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-			String currentTime = df.format(dateObject);
-			java.sql.Date sqlDate = new java.sql.Date(df.parse(currentTime).getTime());
-			System.out.println(df.format(dateObject));
-			if (temporaryDB != null) {
+			Timestamp timeStamp = new Timestamp(dateObject.getTime());
+			System.out.println("Received request to listen for song from: " + temporaryDB.get(0).getUser_id()
+					+ " Date and time: " + timeStamp);
+
+			if (temporaryDB.isEmpty()) {
 				message.setMessage("I GOT THE SONG ID AND THE USER ID!");
 				// setting time and date to each song
 				for (TemporaryDB a : temporaryDB) {
 					System.out.println("Listen: \nSong ID: " + a.getSong_id() + "User ID: " + a.getUser_id());
-					a.setDate(dateObject);
+					a.setDateTimePlayed(timeStamp);
 				}
 				playedSongsService.saveTemporaryDB(temporaryDB);
-
 			} else {
 				message.setMessage("NO SONG ID AND USER ID<|3");
 			}
@@ -307,7 +278,7 @@ public class MusicEndpoint {
 	}
 
 	@RequestMapping(value = "/listenPlaylist", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ListenResponse listen(@RequestBody Playlist playlist) {
+	public ListenResponse listenPlaylist(@RequestBody Playlist playlist) {
 
 		ListenResponse lResponse = new ListenResponse();
 		Message message = new Message();
@@ -318,7 +289,7 @@ public class MusicEndpoint {
 			Timestamp timeStamp = new Timestamp(dateObject.getTime());
 			System.out.println("Received request to listen for playlist: " + playlist.getPlaylistId() + " from: "
 					+ playlist.getUser().getUsername() + " Date and time: " + timeStamp);
-			playlistService.updateLastPlayedPlaylist(playlist.getPlaylistId(),timeStamp);
+			playlistService.updateLastPlayedPlaylist(playlist.getPlaylistId(), timeStamp);
 			message.setFlag(true);
 		} catch (Exception e) {
 			e.printStackTrace();

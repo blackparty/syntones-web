@@ -22,6 +22,9 @@ public class Tag {
 	@Column(name="tag")
 	private String tag;
 	
+	@Column(name="flag")
+	private boolean flag;
+	
 	@Transient
 	private List<TagSynonym> synonyms;
 	
@@ -60,15 +63,22 @@ public class Tag {
 		this.tag = tag;
 	}
 
+	
+
+	public boolean isFlag() {
+		return flag;
+	}
+
+	public void setFlag(boolean flag) {
+		this.flag = flag;
+	}
+
+
+
 	@Override
 	public String toString() {
-		return "Tag [id=" + id + ", tag=" + tag + "]";
+		return "Tag [id=" + id + ", tag=" + tag + ", flag=" + flag + "]";
 	}
-	
-	
-	
-	
-	
 	
 	
 	

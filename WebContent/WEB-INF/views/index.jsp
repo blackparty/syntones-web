@@ -27,6 +27,9 @@
 	<br>
 	<br>
 	<a href="globalSummarize"><button>Global Summarize</button></a>
+	<br>
+	<br>
+	<a href="tagSongs"><button>tagSongs</button></a>
 	<!-- 
 	<a href="arRecom"><button>Association Rule</button></a>
 	<br>

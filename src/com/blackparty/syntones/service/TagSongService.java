@@ -19,6 +19,10 @@ public class TagSongService {
 		return tagSongDao.getTagsOfTheSong(song);
 	}
 	
+	public List<String> getAvailableTags()throws Exception{
+		return tagSongDao.getAvailableTags();
+	}
+	
 	public List<TagSong> getSongsByTags(String tag)throws Exception{
 		return tagSongDao.getSongByTags(tag);
 	}

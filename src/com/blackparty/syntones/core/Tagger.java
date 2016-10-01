@@ -9,39 +9,48 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.blackparty.syntones.DAO.TagDAO;
 import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.model.SongLine;
 import com.blackparty.syntones.model.Tag;
 import com.blackparty.syntones.model.TagSong;
 import com.blackparty.syntones.model.TagSynonym;
+import com.blackparty.syntones.service.TagService;
 
 public class Tagger {
 	private Summarize summarize = new Summarize();
 	private Stemmer stem = new Stemmer();
-
-	public List<TagSong> start(Song song, List<Tag> tags) throws Exception {
+	
+	public Tagger(){
+		
+	}
+	
+	public List<TagSong> start(Song song,List<Tag>tags) throws Exception {
 		System.out.println("start tagging the songs");
 		ArrayList<TagSong> tagSong = new ArrayList<>();
 		HashMap<String, Integer> wordMap = mapWords(song);
 		int totalNumberOfWordsInTheSong =  getNumberOfWords(wordMap);
 		// pulling one tag
-		for (Tag t : tags) {
+		for(int i=0;i<tags.size();i++){
+			boolean flag = false;
 			// preparing the tag with its synonyms
 			ArrayList<String> tagWithFriends = new ArrayList<>();
-			
-			tagWithFriends.add(t.getTag());
-			for (TagSynonym syn : t.getSynonyms()) {
+			tagWithFriends.add(tags.get(i).getTag());
+			for (TagSynonym syn : tags.get(i).getSynonyms()) {
 				tagWithFriends.add(syn.getSynonym());
 			}
 			System.out.println("Evaluating the song with the following tags: ");
 			for(String s:tagWithFriends){
 				System.out.println(s);
 			}
-			
 			ArrayList<String> hitTag = new ArrayList<>();
 			float affinityWeight = 0;
 			for (String tag : tagWithFriends) {
+				System.out.println("evaluating tag: "+tag);
 				if (wordMap.containsKey(tag)) {
+					flag = true;
 					//gets affinityWeight
 					System.out.print("HIT! ");
 					System.out.print("Tag: "+tag+"\t "+wordMap.get(tag)+" / "+totalNumberOfWordsInTheSong);
@@ -60,10 +69,12 @@ public class Tagger {
 					}
 				}
 			}
+			//update tag's flag
+			tags.get(i).setFlag(flag);
 			if(affinityWeight != 0){
 				TagSong tg = new TagSong();
 				tg.setAffinity(affinityWeight);
-				tg.setTag(t.getTag());
+				tg.setTag(tags.get(i).getTag());
 				tg.setSongId(song.getSongId());
 				tagSong.add(tg);
 			}

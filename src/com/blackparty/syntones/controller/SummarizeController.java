@@ -60,7 +60,6 @@ public class SummarizeController {
 
 		List<Song> songList = songService.getAllSongsFromDb();
 		Summarize summarize = new Summarize();
-		ArrayList<SongLine> globalSongLine = new ArrayList();
 
 		try{
 			List<SongLine> songLines = summarize.start(songList);

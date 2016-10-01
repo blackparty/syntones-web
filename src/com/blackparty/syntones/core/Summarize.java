@@ -82,7 +82,10 @@ public class Summarize {
 	}
 
 	public List<SongLine> start(List<Song> songs) throws Exception {
-
+		System.out.println("Reworking global summarization of the following songs:");
+		for(Song s:songs){
+			System.out.println(s.toStringFromDB());
+		}
 		List<SongLine> lyrics = cleanLyrics(songs);
 		CompressionHashing compressionHashing = new CompressionHashing();
 		List<String> hashedLines = compressionHashing.hash(lyrics);

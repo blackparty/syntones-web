@@ -22,6 +22,37 @@ public class TagDAO {
 		session.flush();
 		session.close();
 	}
+	public void updateFlag(long tagId, boolean flag)throws Exception{
+		Session session = sessionFactory.openSession();
+		Query query = session.createQuery("update Tag set flag =:flag where id=:tagId");
+		query.setBoolean("flag", flag);
+		query.setLong("tagId", tagId);
+		query.executeUpdate();
+		session.flush();
+		session.close();
+	}
+	
+	public void updateBatchFlags(List<Tag>tags)throws Exception{
+		for(Tag t : tags){
+			Session session = sessionFactory.openSession();
+			Query query = session.createQuery("update Tag set flag =:flag where id=:tagId");
+			query.setBoolean("flag", t.isFlag());
+			query.setLong("tagId", t.getId());
+			query.executeUpdate();
+			session.flush();
+			session.close();
+		}
+	}
+	
+	public Tag getTag(String tag)throws Exception{
+		Session session = sessionFactory.openSession();
+		Query query = session.createQuery("from Tag where tag =:name");
+		Tag fetchedTag = (Tag)query.uniqueResult();
+		session.flush();
+		session.close();
+		return fetchedTag;
+	}
+	
 	public List<Tag> getAllTags()throws Exception{
 		Session session = sessionFactory.openSession();
 		Query query = session.createQuery("from Tag");
