@@ -21,6 +21,8 @@ public class SongEncryptDecrypt {
 	private static final String salt = "t784";
 	private static final String cryptPassword = "873147cbn9x5'2 79'79314";
 	private static final String pathEncrypted = "C:/Users/YLaya/Desktop/downloaded/";
+	private static final String court = "court";
+	
 
 	public boolean encryptSong(String path, File file) {
 		try {
@@ -66,13 +68,14 @@ public class SongEncryptDecrypt {
 			
 			FileInputStream fis = new FileInputStream(path);
 			String pathString = path.toString();
-			if (pathString.endsWith(".mp3.crypt")) {
-				pathString = pathString.substring(0, pathString.length() - 10);
+			if (pathString.endsWith(".crypt")) {
+				pathString = pathString.substring(0, pathString.length() - 6);
 			}
-			File tempMp3 = File.createTempFile(path.getName().substring(0, path.getName().length() - 10), ".mp3",path.getParentFile());
-	        tempMp3.deleteOnExit();
+			File tempMp3 =new File(pathString+".mp3");
+			//File tempMp3 = File.createTempFile(path.getName().substring(0, path.getName().length() - 6), ".mp3",path.getParentFile());
+	      //  tempMp3.deleteOnExit();
 			
-			byte[] key = (salt + cryptPassword).getBytes("UTF-8");
+			byte[] key = (salt + court).getBytes("UTF-8");
 			MessageDigest sha = MessageDigest.getInstance("SHA-1");
 			key = sha.digest(key);
 			key = Arrays.copyOf(key, 16);
