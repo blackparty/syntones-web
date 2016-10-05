@@ -18,4 +18,14 @@ public class TagService {
 	public List<Tag> getAllTags()throws Exception{
 		return tagDao.getAllTags();
 	}
+	public Tag getTag(String tag)throws Exception{
+		return tagDao.getTag(tag);
+	} 
+	public void updateFlag(long tagId, boolean flag)throws Exception{
+		tagDao.updateFlag(tagId, flag);
+	}
+	
+	public void updateBatchFlags(List<Tag>tags)throws Exception{
+		tagDao.updateBatchFlags(tags);
+	}
 }

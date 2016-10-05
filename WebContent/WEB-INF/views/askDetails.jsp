@@ -9,13 +9,13 @@
 <body>
 	<p>${system_message}</p>
 	<form action="checkDetails" method="post">
-		<input type="text" name="songTitle" value=${ songTitle } placeholder="song title"/>
-		<input type="text" name="artistName" value=${ artistName } placeholder="artist name"/>
+		<input type="text" name="songTitle" value="${ songTitle }" placeholder="song title"/>
+		<input type="text" name="artistName" value="${ artistName }" placeholder="artist name"/>
 		<input type="submit" value="validate"> 
 	</form>
 	<form action="saveSong" method="post">
-		<input type="text" name="songTitle" value=${ songTitle } hidden="true" placeholder="song title"/>
-		<input type="text" name="artistName" value=${ artistName } hidden="true" placeholder="artist name"/>
+		<input type="text" name="songTitle" value="${ songTitle }" hidden="true" placeholder="song title"/>
+		<input type="text" name="artistName" value="${ artistName }" hidden="true" placeholder="artist name"/>
 		<input type="submit" value="save"> 
 	</form>
 	<a href="index"><button>Cancel</button></a>

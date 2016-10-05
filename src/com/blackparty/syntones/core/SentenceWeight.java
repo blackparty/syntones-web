@@ -89,6 +89,7 @@ public class SentenceWeight {
 	            System.out.println("Sentence Weight: " + sWeight);
 	            sentenceWeight.add(sWeight);
 	        }
+	        //Runtime.getRuntime().exit(1);
 	        return sentenceWeight;
 	    }
 	    

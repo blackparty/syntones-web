@@ -52,6 +52,7 @@ public class MainController {
 				List<TagSynonym> synonyms = tagSynonymService.getTagSynonym(tags.get(i).getId());
 				tags.get(i).setSynonyms(synonyms);
 			}
+			
 			Tagger tagger = new Tagger();
 			for(int i=0;i<songs.size();i++){
 				List<TagSong> tagSong = tagger.start(songs.get(i),tags);

@@ -28,6 +28,15 @@ public class TagSongDAO {
 		session.close();
 	}
 	
+	public List<String> getAvailableTags()throws Exception{
+		Session session = sessionFactory.openSession();
+		Query query = session.createQuery("select distinct tag from TagSong");
+		List<String> fetchedTags = query.list();
+		session.flush();
+		session.close();
+		return fetchedTags;
+	}
+	
 	public List<TagSong> getSongByTags(String tag)throws Exception{
 		Session session = sessionFactory.openSession();
 		Query query = session.createQuery("from TagSong where tag= :name");

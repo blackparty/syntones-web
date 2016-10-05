@@ -149,7 +149,6 @@ public class AddSongController {
 		// save song to the database
 
 		try {
-
 			long songId = ss.addSong(song);
 			song.setSongId(songId);
 
@@ -157,8 +156,6 @@ public class AddSongController {
 			// rework global line ranking
 			List<Song> songList = songService.getAllSongsFromDb();
 			Summarize summarize = new Summarize();
-			ArrayList<SongLine> globalSongLine = new ArrayList();
-
 			List<SongLine> songLines = summarize.start(songList);
 			songLineService.saveBatchSongLines(songLines);
 			List<SongLine> finishedSongLine = songLineService.getAllLines();
@@ -166,8 +163,14 @@ public class AddSongController {
 			for (SongLine sl : finishedSongLine) {
 				System.out.println(sl.toString());
 			}
-
 			List<Tag> tags = tagService.getAllTags();
+			
+			
+			
+			
+			
+			
+			
 			// gets its corresponding synonyms
 			for (int i = 0; i < tags.size(); i++) {
 				List<TagSynonym> synonyms = tagSynonymService.getTagSynonym(tags.get(i).getId());
