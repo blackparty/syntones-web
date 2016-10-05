@@ -164,6 +164,13 @@ public class AddSongController {
 				System.out.println(sl.toString());
 			}
 			List<Tag> tags = tagService.getAllTags();
+			
+			
+			
+			
+			
+			
+			
 			// gets its corresponding synonyms
 			for (int i = 0; i < tags.size(); i++) {
 				List<TagSynonym> synonyms = tagSynonymService.getTagSynonym(tags.get(i).getId());

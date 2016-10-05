@@ -30,6 +30,14 @@
 	<br>
 	<br>
 	<a href="tagSongs"><button>tagSongs</button></a>
+	
+	
+	<hr>
+	<form action="/searchTagForSong" method="post">
+		<input type="text" name="artistName" placeholder="artistName"/>
+		<input type="text" name="songTitle" placeholder="songTitle"/>
+		<input type="submit">
+	</form>
 	<!-- 
 	<a href="arRecom"><button>Association Rule</button></a>
 	<br>
