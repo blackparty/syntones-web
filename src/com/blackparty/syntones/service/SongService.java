@@ -55,4 +55,12 @@ public class SongService {
 	public ArrayList<Song> getSongs(ArrayList<SearchModel> model){
 		return songDao.getSongs(model);
 	}
+	
+	public List<Song> displaySong(int firstResult){
+		return songDao.displaySong(firstResult);
+	}
+	
+	public long songCount(){
+		return songDao.songCount();
+	}
 }

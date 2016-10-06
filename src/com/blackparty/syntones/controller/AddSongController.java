@@ -114,7 +114,7 @@ public class AddSongController {
 			songResult = ts.search(song);
 			if(songResult != null){
 				System.out.println("SONG RESULT! = " + songResult);
-				mav.addObject("system_message", "details has been validated.");
+				mav.addObject("succ_message", "Details has been validated.");
 				mav.addObject("artistName", songResult.getArtistName());
 				mav.addObject("songTitle", songResult.getSongTitle());				
 				mav.setViewName("mp3Details");
@@ -124,7 +124,7 @@ public class AddSongController {
 				System.out.println("i'm here");
 				request.getSession().setAttribute("file", request.getSession().getAttribute("file"));
 				System.out.println("Reading tags successful.");
-				mav.addObject("system_message", "reading on the mp3 tags is successful.");
+				mav.addObject("succ_message", "Reading on the mp3 tags is successful.");
 				mav.addObject("artistName", song.getArtistName());
 				mav.addObject("songTitle", song.getSongTitle());
 				LyricsExtractor lyricsExtractor = new LyricsExtractor();
@@ -137,11 +137,11 @@ public class AddSongController {
 			}else{
 				mav.addObject("artistName",artistName);
 				mav.addObject("songTitle", songTitle);
-				mav.addObject("system_message", "an error occured, click \"save\" ");
+				mav.addObject("err_message", "An error occured, click \"save\" ");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			mav.addObject("system_message", "Exception occured.");
+			mav.addObject("err_message", "Exception occured.");
 			mav.setViewName("askDetails");
 			return mav;
 		}
@@ -150,7 +150,7 @@ public class AddSongController {
 
 	@RequestMapping(value = "/saveSong")
 	public ModelAndView saveSong(@RequestParam("artistName") String artistName,
-			@RequestParam("songTitle") String songTitle, HttpServletRequest request) {
+			@RequestParam("songTitle") String songTitle, HttpServletRequest request, HttpSession session) {
 		ModelAndView mav = new ModelAndView();
 		System.out.print("Saving artist to the server...");
 		// save the artist to the database
@@ -229,13 +229,25 @@ public class AddSongController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		HttpSession session = request.getSession();
-		session.invalidate();
-		MainController mc = new MainController();
+//
+//		HttpSession session = request.getSession();
+//		session.invalidate();
+		String offset = (String) request.getParameter("offSet");
+		int size;
+		List<Song> songList;
+		if (offset != null) {
+			int offsetreal = Integer.parseInt(offset);
+			offsetreal = offsetreal * 10;
+			songList = songService.displaySong(offsetreal);
+		} else {
+			songList = songService.displaySong(0);
+			size = (int) songService.songCount();
+			session.setAttribute("size", size / 10);
+		}
+		mav.addObject("songList", songList);
 		System.out.println("song saved successfully.");
-		mav = mc.indexPage();
-		mav.addObject("system_message", "Song saved successfully.");
+		mav.setViewName("index");
+		mav.addObject("succ_message", "Song saved successfully.");
 		return mav;
 	}
 
@@ -254,7 +266,7 @@ public class AddSongController {
 			song = id3.readTags(file.getAbsolutePath());
 			HttpSession session = request.getSession();
 			if (song.getArtistName() == null) {
-				mav.addObject("system_message",
+				mav.addObject("err_message",
 						"Cant read any tags on the given file. Please provide title and artist instead.");
 				mav.setViewName("askDetails");
 				System.out.println("cant read any tags on the given file");
@@ -262,10 +274,9 @@ public class AddSongController {
 			} else {
 				
 				//fetch lyrics
-				System.out.println("i'm here");
-				request.getSession().setAttribute("file", request.getSession().getAttribute("file"));
+				request.getSession().setAttribute("file", file);
 				System.out.println("Reading tags successful.");
-				mav.addObject("system_message", "reading on the mp3 tags is successful.");
+				mav.addObject("succ_message", "Reading on the mp3 tags is successful.");
 				mav.addObject("artistName", song.getArtistName());
 				mav.addObject("songTitle", song.getSongTitle());
 				LyricsExtractor lyricsExtractor = new LyricsExtractor();
@@ -283,6 +294,20 @@ public class AddSongController {
 		} 
 		
 		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return mav;
+	}
+	
+
+	@RequestMapping(value="/viewLyrics")
+	public ModelAndView viewSong(@RequestParam("songId") long songId){
+		ModelAndView mav = new ModelAndView("viewLyrics");
+		try {
+			Song song = songService.getSong(songId);
+			mav.addObject("song",song);
+		} catch (Exception e) {
+			System.out.println("something went wrong!");
 			e.printStackTrace();
 		}
 		return mav;

@@ -32,6 +32,9 @@ public class User {
 
 	@Column(name = "date_of_birth")
 	private String dateOfBirth;
+	
+	@Column(name= "admin_flag")
+	private int adminFlag;
 
 	public User() {
 	}
@@ -95,7 +98,13 @@ public class User {
 		this.dateOfBirth = dateOfBirth;
 	}
 
+	public int getAdminFlag() {
+		return adminFlag;
+	}
 
+	public void setAdminFlag(int adminFlag) {
+		this.adminFlag = adminFlag;
+	}
 
 	@Override
 	public String toString() {

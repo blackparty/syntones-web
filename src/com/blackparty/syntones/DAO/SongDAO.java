@@ -128,5 +128,20 @@ public class SongDAO {
 			session.close();
 			
 	}
-
+	public List<Song> displaySong(int firstResult){
+		Session session = sf.openSession();
+		Query query = session.createQuery("from Song");
+		query.setFirstResult(firstResult);
+		query.setMaxResults(10);
+		List<Song> songs =  query.list();
+		session.flush();
+		session.close();
+		return songs;
+	}
+	
+	public long songCount(){
+		Session session = sf.openSession();
+		long count = ((Long) session.createQuery("select count(*) from Song").uniqueResult()).intValue();
+		return count;
+	}
 }
