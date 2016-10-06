@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackparty.syntones.core.MediaResource;
+import com.blackparty.syntones.core.SearchProcess;
 import com.blackparty.syntones.model.Artist;
 import com.blackparty.syntones.model.Message;
 import com.blackparty.syntones.model.Playlist;
+import com.blackparty.syntones.model.SearchResultModel;
 import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.model.User;
 import com.blackparty.syntones.response.ArtistResponse;
@@ -19,15 +21,18 @@ import com.blackparty.syntones.response.PlaylistSongsResponse;
 import com.blackparty.syntones.response.SearchResponse;
 import com.blackparty.syntones.response.SongListResponse;
 import com.blackparty.syntones.service.ArtistService;
+import com.blackparty.syntones.service.ArtistWordBankService;
 import com.blackparty.syntones.service.PlaylistService;
 import com.blackparty.syntones.service.PlaylistSongService;
 import com.blackparty.syntones.service.SongService;
+import com.blackparty.syntones.service.SongWordBankService;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,11 +51,19 @@ import org.springframework.http.MediaType;
 @RestController
 @Component
 public class NavigationEndpoint {
-	@Autowired	private SongService songService;
-	@Autowired	private PlaylistService playlistService;
-	@Autowired	private PlaylistSongService playlistSongService;
-	@Autowired 	private ArtistService artistService;
-
+	@Autowired
+	private SongService songService;
+	@Autowired
+	private PlaylistService playlistService;
+	@Autowired
+	private PlaylistSongService playlistSongService;
+	@Autowired
+	private ArtistService artistService;
+	@Autowired
+	private SongWordBankService sbservice;
+	@Autowired
+	private ArtistWordBankService abservice;
+	
 	
 	@RequestMapping(value="/getAllArtists",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ArtistResponse getAllArtist(){
@@ -71,14 +84,24 @@ public class NavigationEndpoint {
 		return artistResponse;
 	}
 	
-	@RequestMapping(value = "/search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public SearchResponse search(@RequestBody String searchString) {
+	@RequestMapping(value = "/search",method = RequestMethod.POST ,produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public SearchResponse search(@RequestBody String searchString) throws Exception {
 		// wala pa ni siya gamit
 		System.out.println("recived search request");
 		SearchResponse sr = new SearchResponse();
 		Message message = new Message();
 		message.setMessage("search request \"" + searchString + "\"has been received.");
 		sr.setMessage(message);
+		System.out.println("======================= " + searchString + " =======================" + " -ENDPOINT");
+		SearchProcess sp = new SearchProcess();
+		SearchResultModel searchResult = sp.SearchProcess(searchString.replace("\"", "").trim(),
+				abservice.fetchAllWordBank(), sbservice.fetchAllWordBank(),
+				songService.getAllSongs(), artistService.getAllArtists());
+
+		List<Song> songs = songService.getSongs(searchResult.getSongs());
+		List<Artist> artists = artistService.getArtists(searchResult.getArtists());
+		sr.setSongs(songs);
+		
 		return sr;
 	}
 

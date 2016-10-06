@@ -25,7 +25,10 @@ public class LyricsExtractor {
     public List<String> getSongLyrics( String band, String songTitle) throws IOException,HttpStatusException {
      List<String> lyrics= new ArrayList<String>();
     
-     Document doc = Jsoup.connect(songLyricsURL+ "/"+band.replace(" ", "-").toLowerCase()+"/"+songTitle.replace(" ", "-").toLowerCase()+"-lyrics/").get();
+     System.setProperty("http.proxyHost", "192.168.70.61"); //127.0.0.1
+     System.setProperty("http.proxyPort", "3128"); //8182
+     
+     Document doc = Jsoup.connect(songLyricsURL+ "/"+band.replace(" ", "-").toLowerCase()+"/"+songTitle.replace(" ", "-").toLowerCase()+"-lyrics/").userAgent("Chrome").timeout(10*1000).get();
      String title = doc.title();
      System.out.println(title);
      Element p = doc.select("p.songLyricsV14").get(0);   

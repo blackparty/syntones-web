@@ -63,6 +63,9 @@ public class Song {
 
 	@Column(name = "file_path")
 	private String filePath;
+	
+	@Column(name="mood")
+	private String mood;
 
 	public Song() {
 
@@ -146,8 +149,13 @@ public class Song {
 	public String displayTitleAndArtist(){
 		return "Song[Song Title: "+songTitle+", Artist: "+artistName+" ]";
 	}
-	
-	
+	public String getMood() {
+		return mood;
+	}
+
+	public void setMood(String mood) {
+		this.mood = mood;
+	}
 
 	public boolean isFlag() {
 		return flag;

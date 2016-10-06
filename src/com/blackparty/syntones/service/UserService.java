@@ -45,4 +45,34 @@ public class UserService {
 		message.setFlag(true);
 		return message;
 	}
+	
+	public Message authenticateAdmin(User user) throws Exception {
+		User fetchedUser;
+		Message message = new Message();
+		fetchedUser = getUser(user);
+		String m = "";
+		if (fetchedUser != null) {
+			if (!fetchedUser.getPassword().equals(user.getPassword())) {
+				m = "Password is not correct.";
+				System.out.println(m);
+				message.setMessage(m);
+				message.setFlag(false);
+				return message;
+			}else if((fetchedUser.getAdminFlag() == 0)){
+				m = "\""+user.getUsername()+"\" does not exists.";
+				System.out.println(m);
+				message.setMessage(m);
+				message.setFlag(false);
+				return message;
+			}
+		} else {
+			m = user.getUsername()+" does not exists.";
+			System.out.println(m);
+			message.setMessage(m);
+			message.setFlag(false);
+			return message;
+		}
+		message.setFlag(true);
+		return message;
+	}
 }
