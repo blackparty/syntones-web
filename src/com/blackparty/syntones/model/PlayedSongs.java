@@ -23,8 +23,8 @@ public class PlayedSongs {
 	@Column(name = "id")
 	private long id;
 
-	@Column(name = "session_id")
-	private Long session_id;
+	@Column(name = "user_id")
+	private String user_id;
 
 	@Column(name = "track_id")
 	private String track_id;
@@ -38,18 +38,18 @@ public class PlayedSongs {
 		super();
 	}
 
-	public PlayedSongs(Long session_id, String track_id) {
+	public PlayedSongs(String user_id, String track_id) {
 		super();
-		this.session_id = session_id;
+		this.user_id = user_id;
 		this.track_id = track_id;
 	}
 
-	public Long getSession_id() {
-		return session_id;
+	public String getUser_id() {
+		return user_id;
 	}
 
-	public void setSession_id(Long session_id) {
-		this.session_id = session_id;
+	public void setUser_id(String user_id) {
+		this.user_id = user_id;
 	}
 
 	public String getTrack_id() {

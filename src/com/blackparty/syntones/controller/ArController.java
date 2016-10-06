@@ -56,13 +56,13 @@ public class ArController {
 		System.out.println("-- PLAY SONG --");
 
 		String song_id = request.getParameter("song_id");
-		Long session_id = Long.parseLong(request.getParameter("session_id"));
+		String user_id = request.getParameter("user_id");
 
-		boolean playedSongExists = playedSongsService.checkIfPlayedSongExists(session_id, song_id);
+		boolean playedSongExists = playedSongsService.checkIfPlayedSongExists(user_id, song_id);
 		System.out.println("EXISTS:" + playedSongExists);
 		if (playedSongExists == false) {
 			PlayedSongs playedSongs = new PlayedSongs();
-			playedSongs.setSession_id(session_id);
+			playedSongs.setUser_id(user_id);
 			playedSongs.setTrack_id(song_id);
 			System.out.println("EXISTS:" + playedSongExists);
 			playedSongsService.savePlayedSongs(playedSongs);

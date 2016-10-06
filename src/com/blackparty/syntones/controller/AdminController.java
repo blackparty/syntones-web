@@ -182,7 +182,7 @@ public class AdminController {
 		System.out.println("AR - ADMIN CONTROLLER");
 
 		ArrayList<String> track_id_list = ar.getUniqueOneItemTracks(played_songs_list);
-		ArrayList<Long> session_id_list = ar.getUniqueSessions(played_songs_list);
+		ArrayList<String> session_id_list = ar.getUniqueSessions(played_songs_list);
 
 		int[][] oneItemBasket = ar.getOneItemBasket(played_songs_list, session_id_list, track_id_list);
 

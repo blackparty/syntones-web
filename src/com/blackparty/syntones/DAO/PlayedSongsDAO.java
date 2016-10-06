@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.blackparty.syntones.model.OneItemSet;
 import com.blackparty.syntones.model.OneItemSetCount;
 import com.blackparty.syntones.model.PlayedSongs;
 import com.blackparty.syntones.model.TemporaryDB;
@@ -26,40 +25,30 @@ public class PlayedSongsDAO {
 	@Autowired
 	private PlayedSongsService playedSongsService;
 
-	
-	
 	// INSERTS
-		public void saveTemporaryDB(List<TemporaryDB> temporaryDB) {
-			Session session = sf.openSession();
-
-			for (TemporaryDB a : temporaryDB) {
-
-				a.getSong_id();
-				a.getUser_id();
-				session.save(a);
-				session.flush();
-			}
-
-			session.close();
-		}
-
-	
-	public void savePlayedSongs(PlayedSongs playedSongs) {
+	public void saveTemporaryDB(List<TemporaryDB> temporaryDB) {
 		Session session = sf.openSession();
 
-		playedSongs.getSession_id();
-		playedSongs.getTrack_id();
+		for (TemporaryDB a : temporaryDB) {
 
-		session.save(playedSongs);
-		session.flush();
+			a.getSong_id();
+			a.getUser_id();
+			session.save(a);
+			session.flush();
+		}
+
 		session.close();
 	}
 
-	public List<PlayedSongs> getPlayedSongs() {
+	public void savePlayedSongs(PlayedSongs playedSongs) {
 		Session session = sf.openSession();
-		Query query = session.createQuery("from PlayedSongs");
-		return query.list();
 
+		playedSongs.getTrack_id();
+		playedSongs.getUser_id();
+		session.save(playedSongs);
+		session.flush();
+
+		session.close();
 	}
 
 	public void insertOneItemSetCount(ArrayList<OneItemSetCount> one_item_set_count_list) {
@@ -119,6 +108,21 @@ public class PlayedSongsDAO {
 
 	}
 
+	// FETCHES
+
+	public List<TemporaryDB> getTemporaryDB() {
+		Session session = sf.openSession();
+		Query query = session.createQuery("from TemporaryDB");
+		return query.list();
+	}
+
+	public List<PlayedSongs> getPlayedSongs() {
+		Session session = sf.openSession();
+		Query query = session.createQuery("from PlayedSongs");
+		return query.list();
+
+	}
+
 	public List<TwoItemSet> getTwoItemSet() {
 
 		Session session = sf.openSession();
@@ -140,15 +144,15 @@ public class PlayedSongsDAO {
 		return query.list();
 	}
 
-	public boolean checkIfPlayedSongExists(long session_id, String song_id) {
+	public boolean checkIfPlayedSongExists(String user_id, String song_id) {
 		boolean songExists;
 		Session session = sf.openSession();
-		Query query = session.createQuery("from PlayedSongs where session_id = :session_id AND track_id = :song_id");
-		query.setLong("session_id", session_id);
+		Query query = session.createQuery("from PlayedSongs where user_id = :user_id AND track_id = :song_id");
+		query.setString("user_id", user_id);
 		query.setString("song_id", song_id);
 
 		PlayedSongs playedSongs = (PlayedSongs) query.uniqueResult();
-		if (playedSongs!=null) {
+		if (playedSongs != null) {
 			songExists = true;
 		} else {
 			songExists = false;
@@ -157,6 +161,48 @@ public class PlayedSongsDAO {
 		session.flush();
 		session.close();
 		return songExists;
+	}
+	//use username instead of userID
+	public List<PlayedSongs> getPlayedSongsByUserId(String user_id){
+		Session session = sf.openSession();
+		Query query = session.createQuery("from PlayedSongs where user_id =:user_id");
+		query.setString("user_id", user_id);
+		List<PlayedSongs> playedsongs = query.list();
+		return playedsongs;
+	}
+
+	// DELETES
+
+	public void truncateTemporaryDB() {
+
+		Session session = sf.openSession();
+		Query query = session.createQuery("delete from TemporaryDB");
+		query.executeUpdate();
+		session.close();
+	}
+
+	public void truncateOneSetItemCount() {
+
+		Session session = sf.openSession();
+		Query query = session.createQuery("delete from OneItemSetCount");
+		query.executeUpdate();
+		session.close();
+	}
+
+	public void truncateTwoItemSet() {
+
+		Session session = sf.openSession();
+		Query query = session.createQuery("delete from TwoItemSet");
+		query.executeUpdate();
+		session.close();
+	}
+
+	public void truncateThreeItemSet() {
+
+		Session session = sf.openSession();
+		Query query = session.createQuery("delete from ThreeItemSet");
+		query.executeUpdate();
+		session.close();
 	}
 
 }
