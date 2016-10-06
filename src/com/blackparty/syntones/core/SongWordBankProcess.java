@@ -3,7 +3,6 @@ package com.blackparty.syntones.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ public class SongWordBankProcess {
 	@Autowired
 	private SongWordBankService ss;
 
-	public TemporaryModel WBSongProcess(List<Song> songs) throws Exception {
+	public TemporaryModel WBSongProcess(ArrayList<Song> songs) throws Exception {
 		ArrayList<String> bagOfWordsSong = new ArrayList();
 		ArrayList<TokenNCount> perSong = new ArrayList();
 		ArrayList<ArrayList<TokenNCount>> wordsPerSong = new ArrayList();
@@ -178,7 +177,7 @@ public class SongWordBankProcess {
 		}
 	};
 
-	public List<Song> saveMatrixToList(List<Song> songs,
+	public ArrayList<Song> saveMatrixToList(ArrayList<Song> songs,
 			int[][] matrix) {
 		int counter = 0;
 		if (songs.isEmpty()) {

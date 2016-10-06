@@ -34,7 +34,7 @@ public class FTPUploader {
 		try(InputStream input = new FileInputStream(new File(localFileFullName))){
 		this.ftp.storeFile(hostDir + fileName, input);
 		}
-		return "C:/Users/YLaya/Desktop/uploaded/"+fileName;
+		return hostDir+fileName;
 	}
 
 	public void disconnect(){

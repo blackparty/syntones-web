@@ -570,7 +570,7 @@ public class Track extends MusicEntry {
 	 * @param scrobbleResultType The type of scrobble result contained within the Result.
 	 * @return A ScrobbleResult containing the original Result information plus extra fields specific to scrobble and now playing results.
 	 */
-	private static List<ScrobbleResult> convertToScrobbleResults(Result result, ScrobbleResultType scrobbleResultType) {
+/*	private static List<ScrobbleResult> convertToScrobbleResults(Result result, ScrobbleResultType scrobbleResultType) {
 		List<ScrobbleResult> scrobbleResults = new ArrayList<ScrobbleResult>();
 		if (!result.isSuccessful()) {
 			// if result failed then we have no extra information
@@ -596,7 +596,7 @@ public class Track extends MusicEntry {
 		}
 		return scrobbleResults;
 	}
-
+*/
 	/**
 	 * Parses a DomElement containing scrobble or now playing response data into the passed ScrobbleResult.
 	 *
@@ -635,7 +635,7 @@ public class Track extends MusicEntry {
 		}
 	}
 
-	public static ScrobbleResult scrobble(ScrobbleData scrobbleData, Session session) {
+	/*public static ScrobbleResult scrobble(ScrobbleData scrobbleData, Session session) {
 		Map<String, String> params = new HashMap<String, String>();
 		// required params
 		params.put("artist", scrobbleData.getArtist());
@@ -710,7 +710,7 @@ public class Track extends MusicEntry {
 				+ ", location=" + location + ", nowPlaying=" + nowPlaying + ", fullTrackAvailable=" + fullTrackAvailable + ", playedWhen="
 				+ playedWhen + ", artistMbId=" + artistMbid + ", albumMbId" + albumMbid + "]";
 	}
-
+*/
 	private static class TrackFactory implements ItemFactory<Track> {
 		public Track createItemFromElement(DomElement element) {
 			Track track = new Track(null, null, null);
@@ -755,4 +755,5 @@ public class Track extends MusicEntry {
 			return track;
 		}
 	}
+	
 }

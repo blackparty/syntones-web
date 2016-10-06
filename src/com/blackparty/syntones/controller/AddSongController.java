@@ -20,21 +20,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.blackparty.syntones.core.ArtistWordBankProcess;
 import com.blackparty.syntones.core.ID3Extractor;
 import com.blackparty.syntones.core.LyricsExtractor;
+import com.blackparty.syntones.core.SongWordBankProcess;
 import com.blackparty.syntones.core.Summarize;
 import com.blackparty.syntones.core.Tagger;
 import com.blackparty.syntones.core.TrackSearcher;
 import com.blackparty.syntones.model.Artist;
 import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.model.SongLine;
+import com.blackparty.syntones.model.SongWordBank;
 import com.blackparty.syntones.model.Tag;
 import com.blackparty.syntones.model.TagSong;
 import com.blackparty.syntones.model.TagSynonym;
+import com.blackparty.syntones.model.TemporaryModel;
 import com.blackparty.syntones.service.ArtistService;
+import com.blackparty.syntones.service.ArtistWordBankService;
 import com.blackparty.syntones.service.PlayedSongsService;
 import com.blackparty.syntones.service.SongLineService;
 import com.blackparty.syntones.service.SongService;
+import com.blackparty.syntones.service.SongWordBankService;
 import com.blackparty.syntones.service.TagService;
 import com.blackparty.syntones.service.TagSongService;
 import com.blackparty.syntones.service.TagSynonymService;
@@ -56,7 +62,10 @@ public class AddSongController {
 	private TagSongService tagSongService;
 	@Autowired
 	private SongService songService;
-
+	@Autowired
+	ArtistWordBankService aservice;
+	@Autowired
+	SongWordBankService sservice;
 	@Autowired
 	private TagService tagService;
 
@@ -91,7 +100,7 @@ public class AddSongController {
 
 	@RequestMapping(value = "/checkDetails", method = RequestMethod.POST)
 	public ModelAndView askDetails(@RequestParam("artistName") String artistName,
-			@RequestParam("songTitle") String songTitle, HttpServletRequest request) {
+			@RequestParam("songTitle") String songTitle, HttpServletRequest request, HttpSession session) {
 		ModelAndView mav = new ModelAndView();
 		// validates given artist and song title
 		// validate the information via net
@@ -107,8 +116,24 @@ public class AddSongController {
 				System.out.println("SONG RESULT! = " + songResult);
 				mav.addObject("system_message", "details has been validated.");
 				mav.addObject("artistName", songResult.getArtistName());
-				mav.addObject("songTitle", songResult.getSongTitle());
+				mav.addObject("songTitle", songResult.getSongTitle());				
 				mav.setViewName("mp3Details");
+				
+
+				//fetch lyrics
+				System.out.println("i'm here");
+				request.getSession().setAttribute("file", request.getSession().getAttribute("file"));
+				System.out.println("Reading tags successful.");
+				mav.addObject("system_message", "reading on the mp3 tags is successful.");
+				mav.addObject("artistName", song.getArtistName());
+				mav.addObject("songTitle", song.getSongTitle());
+				LyricsExtractor lyricsExtractor = new LyricsExtractor();
+				List<String> lyrics = lyricsExtractor.getSongLyrics(song.getArtistName(), song.getSongTitle());
+				System.out.println("saving song and file to session.");
+				System.out.println(song.displayTitleAndArtist());
+				request.getSession().setAttribute("lyrics", lyrics);
+								
+				
 			}else{
 				mav.addObject("artistName",artistName);
 				mav.addObject("songTitle", songTitle);
@@ -151,6 +176,26 @@ public class AddSongController {
 		try {
 			long songId = ss.addSong(song);
 			song.setSongId(songId);
+		
+			//word bank process
+			List<Song> songs = ss.getAllSongs();
+			List<Artist> artists = as.getAllArtists();
+			if (!songs.isEmpty() && !artists.isEmpty()) {
+				SongWordBankProcess swb = new SongWordBankProcess();
+				TemporaryModel tm = swb.WBSongProcess((ArrayList<Song>) songs);
+				songs = tm.getSongs();
+				List<SongWordBank> words = tm.getWords();
+
+				ss.updateBatchAllSongs(songs);
+				sservice.updateWordBank(words);
+
+				ArtistWordBankProcess awb = new ArtistWordBankProcess();
+				tm = awb.WBArtistProcess((ArrayList<Artist>) artists);
+
+				as.updateBatchAllArtist(tm.getArtists());
+				aservice.updateWordBank(tm.getAwords());
+			}
+			
 
 			songLineService.truncateTable();
 			// rework global line ranking
@@ -164,10 +209,6 @@ public class AddSongController {
 				System.out.println(sl.toString());
 			}
 			List<Tag> tags = tagService.getAllTags();
-			
-			
-			
-			
 			
 			
 			
@@ -203,7 +244,7 @@ public class AddSongController {
 		ModelAndView mav = new ModelAndView();
 		try {
 			System.out.println(multiPartFile.getOriginalFilename());
-			File file = new File("D:/deletables/" + multiPartFile.getOriginalFilename());
+			File file = new File(multiPartFile.getOriginalFilename());
 			multiPartFile.transferTo(file);
 			System.out.println("file name: " + file.getName());
 			// FileCopy fc = new FileCopy();
@@ -221,18 +262,19 @@ public class AddSongController {
 			} else {
 				
 				//fetch lyrics
-				request.getSession().setAttribute("file", file);
+				System.out.println("i'm here");
+				request.getSession().setAttribute("file", request.getSession().getAttribute("file"));
 				System.out.println("Reading tags successful.");
 				mav.addObject("system_message", "reading on the mp3 tags is successful.");
 				mav.addObject("artistName", song.getArtistName());
 				mav.addObject("songTitle", song.getSongTitle());
 				LyricsExtractor lyricsExtractor = new LyricsExtractor();
 				List<String> lyrics = lyricsExtractor.getSongLyrics(song.getArtistName(), song.getSongTitle());
-				mav.setViewName("showLyrics");
 				System.out.println("saving song and file to session.");
 				System.out.println(song.displayTitleAndArtist());
-				mav.addObject("lyrics", lyrics);
-				session.setAttribute("file", file);
+				request.getSession().setAttribute("lyrics", lyrics);
+				
+				mav.setViewName("mp3Details");
 			}
 		}catch(HttpStatusException e){
 			System.out.println("Attempting to get lyrics to the internet had failed.");

@@ -3,7 +3,6 @@ package com.blackparty.syntones.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import com.blackparty.syntones.model.Artist;
@@ -13,7 +12,7 @@ import com.blackparty.syntones.model.TemporaryModel;
 import com.blackparty.syntones.model.TokenNCount;
 
 public class ArtistWordBankProcess {
-	public TemporaryModel WBArtistProcess(List<Artist> artists) {
+	public TemporaryModel WBArtistProcess(ArrayList<Artist> artists) {
 		ArrayList<String> bagOfWordsArtists = new ArrayList();
 		ArrayList<TokenNCount> perArtist = new ArrayList();
 		ArrayList<ArrayList<TokenNCount>> wordsPerArtist = new ArrayList();
@@ -150,7 +149,7 @@ public class ArtistWordBankProcess {
 		}
 	};
 
-	public List<Artist> saveMatrixToList(List<Artist> artists,
+	public ArrayList<Artist> saveMatrixToList(ArrayList<Artist> artists,
 			int[][] matrix) {
 		int counter = 0;
 		for (Artist artist : artists) {
