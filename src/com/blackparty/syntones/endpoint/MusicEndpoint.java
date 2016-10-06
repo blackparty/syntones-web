@@ -355,12 +355,13 @@ public class MusicEndpoint {
 	}
 
 	@RequestMapping(value = "/playPlaylist", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public PlaylistSongsResponse playPlaylist(@RequestBody Playlist playlist) {
+	public PlaylistSongsResponse playPlaylist(@RequestBody Playlist playlist) throws Exception {
 		System.out.println("Received request to play a playlist: " + playlist.getPlaylistId() + " from "
 				+ playlist.getUser().getUsername());
 		PlaylistSongsResponse ppResponse = new PlaylistSongsResponse();
 		Playlist fetchedPlaylist = new Playlist();
 		Message message = new Message();
+		
 		try {
 			fetchedPlaylist = playlistService.getSongsFromPlaylist(playlist.getPlaylistId());
 		} catch (Exception e) {
