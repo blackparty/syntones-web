@@ -20,8 +20,8 @@ public class TemporaryDB {
 	private long song_id;
 
 	@Column(name="played_date",nullable = true)
-
 	private Timestamp dateTimePlayed;
+	
 	public TemporaryDB() {
 		super();
 	}

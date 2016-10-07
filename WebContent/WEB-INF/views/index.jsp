@@ -19,7 +19,13 @@
 <meta name="keywords"
 	content="Modern Responsive web template, Bootstrap Web Templates, Flat Web Templates, Andriod Compatible web template, 
 	Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
-<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<script type="application/x-javascript">
+	
+	
+	 addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } 
+
+
+</script>
 <!-- Bootstrap Core CSS -->
 <link
 	href="<%=request.getContextPath()%>/resources/css/bootstrap.min.css"
@@ -45,12 +51,15 @@
 	<%
 		String offSet = request.getParameter("offSet");
 		int disableLINK = 0;
-		if(offSet !=null){
+		if (offSet != null) {
 			disableLINK = Integer.parseInt(offSet);
 		}
-		List<Song> songList= (List)request.getAttribute("songList"); 
-		int size = Integer.parseInt(session.getAttribute("size").toString());
-%>
+		List<Song> songList = (List) request.getAttribute("songList");
+		int size = Integer
+				.parseInt(session.getAttribute("size").toString());
+		String flag = request.getParameter("searchflag");
+		String search_err = request.getParameter("search_err");
+	%>
 	<div id="page-wrapper">
 		<div class="col-md-12 graphs">
 			<div class="xs bs-example4">
@@ -60,8 +69,10 @@
 							onclick="myFunction()" value="Add Song"></a>
 					</div>
 				</div>
-				<h3>Song List<h3>
-						<c:if test="${not empty succ_message}">
+				<h3>
+					Song List
+					<h3>
+						<!-- <c:if test="${not empty succ_message}">
 							<div class="success-message">
 								<i class="fa fa-check"></i> ${succ_message}
 							</div>
@@ -71,6 +82,15 @@
 								<i class="fa fa-times-circle"></i> ${err_message}
 							</div>
 						</c:if>
+						 -->
+						<form class="form-inline" action="search" method="post">
+							<div class="form-group">
+								<input type="text" class="text"
+									name="input" placeholder="Search">
+
+								<button type="submit" class="btn btn-default">Search</button>
+							</div>
+						</form>
 						<div class="bs-example4" data-example-id="contextual-table">
 							<table class="table">
 								<thead>
@@ -82,37 +102,60 @@
 									</tr>
 								</thead>
 								<tbody>
+								<c:if test="${not empty search_err }">
+									<tr>
+										<td>${search_err}<td>
+									</tr>
+								</c:if>
 									<c:forEach items="${songList}" var="song">
 										<tr>
 											<th scope="row">${song.songId }</th>
 											<td>${song.songTitle }</td>
 											<td>${song.artist.artistName}</td>
-											<td>
-												<a class="btn-link" href = "${pageContext.request.contextPath}/admin/viewLyrics?songId=${song.songId }">View Lyrics</a>
-											<!--  	<form action="viewLyrics">
+											<td><a class="btn-link"
+												href="${pageContext.request.contextPath}/admin/viewLyrics?songId=${song.songId }">View
+													Lyrics</a> <!--  	<form action="viewLyrics">
 													<input type="hidden" name="songId" value="${song.songId }"> page-link
 													<input class="btn-primary btn 	" type="submit"
 														value="View Lyrics">
 												</form>
-											-->
-											</td>
+											--></td>
+											<!--<td><a class="btn-link"
+												href="${pageContext.request.contextPath}/admin/edit?songId=${song.songId }">Update
+													Song</a></td>  -->
 										</tr>
 									</c:forEach>
 								</tbody>
 							</table>
 						</div>
 						<nav aria-label="...">
-						<ul class="pagination">
+						<ul class="pagination pagination-sm navbar-right">
 							<!--   <li class="page-item disabled"> -->
 							<!--  <li class="page-item active">
       <a class="page-link" href="#">1 <span class="sr-only">(current)</span></a>
     </li>
-   -->	
-	<c:forEach var="i" begin="1" end="${size}">
-		<li class="page-item">
-			<a class="page-link" href = "${pageContext.request.contextPath}/admin/index?offSet=${i}">${i}</a>
-		</li>
-	</c:forEach>
+   -->
+							<c:choose>
+								<c:when test="${not empty flag}">
+								p
+								</c:when>
+								<c:otherwise>
+									<c:forEach var="i" begin="0" end="${size-1}">
+										<c:choose>
+											<c:when test="${i eq disableLINK}">
+												<li class="active page-item"><a class="page-link"
+													href="${pageContext.request.contextPath}/admin/index?offSet=${i}">${i+1}</a>
+												</li>
+											</c:when>
+											<c:otherwise>
+												<li class="page-item"><a class="page-link"
+													href="${pageContext.request.contextPath}/admin/index?offSet=${i}">${i+1}</a>
+												</li>
+											</c:otherwise>
+										</c:choose>
+									</c:forEach>
+								</c:otherwise>
+							</c:choose>
 						</ul>
 						</nav>
 			</div>

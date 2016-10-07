@@ -17,16 +17,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.blackparty.syntones.core.MediaResource;
+import com.blackparty.syntones.core.SearchProcess;
 import com.blackparty.syntones.core.Tagger;
+import com.blackparty.syntones.model.Artist;
 import com.blackparty.syntones.model.Message;
+import com.blackparty.syntones.model.SearchResultModel;
 import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.model.Tag;
 import com.blackparty.syntones.model.TagSong;
 import com.blackparty.syntones.model.TagSynonym;
 import com.blackparty.syntones.model.User;
 import com.blackparty.syntones.response.SynonymResponse;
+import com.blackparty.syntones.service.ArtistService;
+import com.blackparty.syntones.service.ArtistWordBankService;
 import com.blackparty.syntones.service.SampleModelService;
 import com.blackparty.syntones.service.SongService;
+import com.blackparty.syntones.service.SongWordBankService;
 import com.blackparty.syntones.service.TagService;
 import com.blackparty.syntones.service.TagSongService;
 import com.blackparty.syntones.service.TagSynonymService;
@@ -51,6 +57,12 @@ public class MainController {
 	private TagSongService tagSongService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private ArtistService artistService;
+	@Autowired
+	private SongWordBankService sbservice;
+	@Autowired
+	private ArtistWordBankService abservice;
 
 	@RequestMapping(value = "/tagSongs")
 	public ModelAndView tagSongs() {
@@ -126,25 +138,37 @@ public class MainController {
 	public ModelAndView defaultPage(HttpServletRequest request,
 			HttpSession session) {
 		ModelAndView mav = new ModelAndView();
-		if (request.getSession().getMaxInactiveInterval() <= 0) {
+		try {
+			if (session.getAttribute("username").equals("")) {
+				request.getSession().invalidate();
+				mav.setViewName("login");
+				return mav;
+			} else if (request.getSession().getMaxInactiveInterval() <= 0) {
+				request.getSession().invalidate();
+				mav.setViewName("login");
+				return mav;
+			} else {
+				String offset = (String) request.getParameter("offSet");
+				int size;
+				List<Song> songList;
+				if (offset != null) {
+					int offsetreal = Integer.parseInt(offset) - 1;
+					offsetreal = offsetreal * 10;
+					songList = songService.displaySong(offsetreal);
+				} else {
+					songList = songService.displaySong(0);
+					size = (int) songService.songCount();
+					session.setAttribute("size", size / 10);
+				}
+
+				mav.addObject("offset", offset);
+				mav.addObject("songList", songList);
+				mav.setViewName("index");
+				return mav;
+			}
+		} catch (NullPointerException e) {
 			request.getSession().invalidate();
 			mav.setViewName("login");
-			return mav;
-		} else {
-			String offset = (String) request.getParameter("offSet");
-			int size;
-			List<Song> songList;
-			if (offset != null) {
-				int offsetreal = Integer.parseInt(offset);
-				offsetreal = offsetreal * 10;
-				songList = songService.displaySong(offsetreal);
-			} else {
-				songList = songService.displaySong(0);
-				size = (int) songService.songCount();
-				session.setAttribute("size", size / 10);
-			}
-			mav.addObject("songList", songList);
-			mav.setViewName("index");
 			return mav;
 		}
 	}
@@ -164,12 +188,14 @@ public class MainController {
 			if (offset != null) {
 				int offsetreal = Integer.parseInt(offset);
 				offsetreal = offsetreal * 10;
-				songList = songService.displaySong(offsetreal);
+				songList = songService.displaySong(offsetreal - 1);
 			} else {
 				songList = songService.displaySong(0);
 				size = (int) songService.songCount();
 				session.setAttribute("size", size / 10);
 			}
+
+			mav.addObject("offset", offset);
 			mav.addObject("songList", songList);
 			mav.setViewName("index");
 			return mav;
@@ -197,6 +223,7 @@ public class MainController {
 		return mav;
 
 	}
+
 	@RequestMapping(value = "/play", method = RequestMethod.GET)
 	public ModelAndView playSong(@HeaderParam("Range") String range) {
 		ModelAndView mav = new ModelAndView("songInfo");
@@ -238,6 +265,9 @@ public class MainController {
 					session.setAttribute("size", (size / 10));
 					mav.setViewName("index");
 
+				} else {
+					mav.addObject("err_message", message.getMessage());
+					mav.setViewName("login");
 				}
 			} else {
 				mav.addObject("err_message", "Enter valid user");
@@ -257,6 +287,53 @@ public class MainController {
 
 		return "login";
 
+	}
+
+	@RequestMapping(value="/search", method= RequestMethod.POST)
+	public ModelAndView searchAdmin(@RequestParam("input") String searchString,
+			HttpServletRequest request, HttpSession session) throws Exception {
+		ModelAndView mav = new ModelAndView();
+		SearchProcess sp = new SearchProcess();
+		SearchResultModel searchResult = sp.SearchProcess(searchString.trim(),
+				abservice.fetchAllWordBank(), sbservice.fetchAllWordBank(),
+				songService.getAllSongs(), artistService.getAllArtists());
+
+		List<Song> songs = songService.getSongs(searchResult.getSongs());
+		List<Artist> artists = artistService.getArtists(searchResult
+				.getArtists());
+		ArrayList<Song> sprio = new ArrayList<Song>();
+		ArrayList<Song> lprio = new ArrayList<Song>();
+		if(artists.isEmpty()){
+			if(songs.isEmpty()){
+				System.out.println("here");
+				mav.addObject("search_err", "empty");
+			}else{
+				mav.addObject("songList", songs);
+			}
+		}else if(songs.isEmpty()){
+			if(artists.isEmpty()){
+				System.out.println("here");
+				mav.addObject("search_err", "Not Found.");
+			}else{
+				songs = songService.getSongbyArtist(artists);
+				mav.addObject("songList", songs);		
+			}
+		}else{
+			for (Song song : songs) {
+				for (Artist artist : artists) {
+					if (song.getArtist().getArtistId() == artist.getArtistId()) {
+						sprio.add(song);
+					} else {
+						lprio.add(song);
+					}
+				}
+			}
+			sprio.addAll(lprio);
+			mav.addObject("songList", sprio);
+		}
+		mav.setViewName("index");
+		mav.addObject("searchflag", "flag");
+		return mav;
 	}
 	/*
 	 * @RequestMapping(value = "/upload") public ModelAndView

@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -143,5 +144,19 @@ public class SongDAO {
 		Session session = sf.openSession();
 		long count = ((Long) session.createQuery("select count(*) from Song").uniqueResult()).intValue();
 		return count;
+	}
+	
+	public List<Song> getSongbyArtist(List<Artist> artists){
+		Session session = sf.openSession();
+		ArrayList<Song> songs = new ArrayList<Song>();
+		for (Artist artist : artists) {
+			Query query = session.createQuery("from Song where artist.artistId =:id");
+			query.setLong("id", artist.getArtistId());
+			songs.addAll(query.list());
+			session.flush();
+		}
+		
+		session.close();
+		return songs;
 	}
 }

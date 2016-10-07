@@ -318,5 +318,55 @@ public class AddSongController {
 		ModelAndView mav = new ModelAndView("addSong");
 		return mav;
 	}
+	
+	@RequestMapping(value="/edit")
+	public ModelAndView updateSong(@RequestParam("songId") long songId) throws Exception{
+		ModelAndView mav = new ModelAndView("updateSong");
+		Song song = songService.getSong(songId);
+		mav.addObject("song",song);
+		return mav;
+	}
 
+	@RequestMapping(value="/updateSong")
+	public ModelAndView saveUpdatedSong(@RequestParam("songId") long songId,
+			@RequestParam("lyrics") String lyrics, HttpServletRequest request, HttpSession session) throws Exception{
+		ModelAndView mav = new ModelAndView("index");
+		try{
+			//word bank process
+			List<Song> songs = ss.getAllSongs();
+			if (!songs.isEmpty()) {
+				SongWordBankProcess swb = new SongWordBankProcess();
+				TemporaryModel tm = swb.WBSongProcess((ArrayList<Song>) songs);
+				songs = tm.getSongs();
+				List<SongWordBank> words = tm.getWords();
+
+				ss.updateBatchAllSongs(songs);
+				sservice.updateWordBank(words);
+			}
+			
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+//
+//		HttpSession session = request.getSession();
+//		session.invalidate();
+		String offset = (String) request.getParameter("offSet");
+		int size;
+		List<Song> songList;
+		if (offset != null) {
+			int offsetreal = Integer.parseInt(offset);
+			offsetreal = offsetreal * 10;
+			songList = songService.displaySong(offsetreal);
+		} else {
+			songList = songService.displaySong(0);
+			size = (int) songService.songCount();
+			session.setAttribute("size", size / 10);
+		}
+		mav.addObject("songList", songList);
+		System.out.println("song saved successfully.");
+		mav.setViewName("index");
+		mav.addObject("succ_message", "Song saved successfully.");
+		return mav;
+	}
 }

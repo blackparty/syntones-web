@@ -32,7 +32,6 @@
 	<!-- Bootstrap Core JavaScript -->
 	<script src="<%=request.getContextPath()%>/resources/js/bootstrap.min.js"></script>
 </head>
-</head>
 <body>
 	<div class="graphs">
 			<div class="col-md-12 graphs">

@@ -63,4 +63,7 @@ public class SongService {
 	public long songCount(){
 		return songDao.songCount();
 	}
+	public List<Song> getSongbyArtist(List<Artist> artists){
+		return songDao.getSongbyArtist(artists);
+	}
 }

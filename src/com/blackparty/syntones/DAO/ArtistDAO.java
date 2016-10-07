@@ -66,7 +66,6 @@ public class ArtistDAO {
 		session.close();
 		return result;
 	}
-
 	public void updateBatchAllArtist(List<Artist> artists) throws Exception{
 		StatelessSession session = sf.openStatelessSession();
 		Transaction trans = session.beginTransaction();
@@ -76,7 +75,6 @@ public class ArtistDAO {
 		trans.commit();
 		session.close();
 	}
-	
 	public ArrayList<Artist> getArtists(ArrayList<SearchModel> model) {
 		Session session = sf.openSession();
 		ArrayList<Artist> artists = new ArrayList();
