@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackparty.syntones.core.MediaResource;
-import com.blackparty.syntones.core.SearchProcess;
+import com.blackparty.syntones.core.SearchProcessOld;
 import com.blackparty.syntones.model.Artist;
 import com.blackparty.syntones.model.Message;
 import com.blackparty.syntones.model.Playlist;
@@ -21,11 +21,9 @@ import com.blackparty.syntones.response.PlaylistSongsResponse;
 import com.blackparty.syntones.response.SearchResponse;
 import com.blackparty.syntones.response.SongListResponse;
 import com.blackparty.syntones.service.ArtistService;
-import com.blackparty.syntones.service.ArtistWordBankService;
 import com.blackparty.syntones.service.PlaylistService;
 import com.blackparty.syntones.service.PlaylistSongService;
 import com.blackparty.syntones.service.SongService;
-import com.blackparty.syntones.service.SongWordBankService;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -59,10 +57,6 @@ public class NavigationEndpoint {
 	private PlaylistSongService playlistSongService;
 	@Autowired
 	private ArtistService artistService;
-	@Autowired
-	private SongWordBankService sbservice;
-	@Autowired
-	private ArtistWordBankService abservice;
 	
 	
 	@RequestMapping(value="/getAllArtists",produces = MediaType.APPLICATION_JSON_VALUE)
@@ -93,7 +87,7 @@ public class NavigationEndpoint {
 		message.setMessage("search request \"" + searchString + "\"has been received.");
 		sr.setMessage(message);
 		System.out.println("======================= " + searchString + " =======================" + " -ENDPOINT");
-		SearchProcess sp = new SearchProcess();
+	/*	SearchProcess sp = new SearchProcess();
 		SearchResultModel searchResult = sp.SearchProcess(searchString.replace("\"", "").trim(),
 				abservice.fetchAllWordBank(), sbservice.fetchAllWordBank(),
 				songService.getAllSongs(), artistService.getAllArtists());
@@ -101,7 +95,7 @@ public class NavigationEndpoint {
 		List<Song> songs = songService.getSongs(searchResult.getSongs());
 		List<Artist> artists = artistService.getArtists(searchResult.getArtists());
 		sr.setSongs(songs);
-		
+		*/
 		return sr;
 	}
 

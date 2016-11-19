@@ -8,27 +8,80 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
-
 @Entity
-@Table(name = "song_word_bank_tbl")
+@Table(name="song_word_bank")
 public class SongWordBank {
-
-	@Id
-	@TableGenerator(name = "table_gen", table = "sequence_table", pkColumnName = "seq_name", valueColumnName = "seq_count", pkColumnValue = "song_seq")
-	@GeneratedValue(strategy = GenerationType.TABLE, generator = "table_gen")
 	
-	@Column(name = "id")
-	private long id;
-
-	@Column(name = "word")
+	@Id
+	@Column(name="word_id")
+	@TableGenerator(name = "table_gen", table = "sequence_table", pkColumnName = "seq_name", valueColumnName = "seq_count", pkColumnValue = "artist_seq")
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "table_gen")
+	private long wordId;
+	
+	@Column(name="song_id")
+	private long songId;
+	
+	@Column(name="max_count")
+	private int maxCount;
+	
+	@Column(name="tf")
+	private int tf;
+	
+	@Column(name="idf")
+	private float idf;
+	
+	@Column(name="step3")
+	private float step3;
+	
+	@Column(name="word")
 	private String word;
-
-	public long getId() {
-		return id;
+	
+	public SongWordBank(){
+		
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public long getWordId() {
+		return wordId;
+	}
+
+	public long getSongId() {
+		return songId;
+	}
+
+	public void setSongId(long songId) {
+		this.songId = songId;
+	}
+
+	public int getMaxCount() {
+		return maxCount;
+	}
+
+	public void setMaxCount(int maxCount) {
+		this.maxCount = maxCount;
+	}
+
+	public int getTf() {
+		return tf;
+	}
+
+	public void setTf(int tf) {
+		this.tf = tf;
+	}
+
+	public float getIdf() {
+		return idf;
+	}
+
+	public void setIdf(float idf) {
+		this.idf = idf;
+	}
+
+	public float getStep3() {
+		return step3;
+	}
+
+	public void setStep3(float step3) {
+		this.step3 = step3;
 	}
 
 	public String getWord() {
@@ -40,5 +93,4 @@ public class SongWordBank {
 	}
 	
 	
-
 }

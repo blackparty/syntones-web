@@ -42,10 +42,6 @@ public class Song {
 
 	@Transient
 	private int distance;
-	
-	@Column(name = "vector_space", columnDefinition = "text")
-	private String vectorSpace;
-
 	@Transient
 	private File file;
 
@@ -66,6 +62,9 @@ public class Song {
 	
 	@Column(name="mood")
 	private String mood;
+	
+	@Column(name="step5_tfidf")
+	private float step5Tfidf;
 
 	public Song() {
 
@@ -78,7 +77,7 @@ public class Song {
 	public void setLyrics(List<String> lyrics) {
 		// adding nextline tag
 		for (int i = 0; i < lyrics.size(); i++) {
-			this.lyrics = this.lyrics.concat(lyrics.get(i).concat("\\n"));
+			this.lyrics = this.lyrics.concat(lyrics.get(i).concat(" \\n "));
 		}
 	}
 
@@ -165,12 +164,12 @@ public class Song {
 		this.flag = flag;
 	}
 	
-	public String getVectorSpace() {
-		return vectorSpace;
+	public float getStep5Tfidf() {
+		return step5Tfidf;
 	}
 
-	public void setVectorSpace(String vectorSpace) {
-		this.vectorSpace = vectorSpace;
+	public void setStep5Tfidf(float step5Tfidf) {
+		this.step5Tfidf = step5Tfidf;
 	}
 
 	@Override

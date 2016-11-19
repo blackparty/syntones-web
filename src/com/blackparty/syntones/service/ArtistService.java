@@ -49,4 +49,7 @@ public class ArtistService {
 		return artistDAO.getArtists(model);
 	}
 
+	public int artistCount(){
+		return artistDAO.artistCount();
+	}
 }

@@ -1,8 +1,12 @@
 package com.blackparty.syntones.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
+//import java.rmi.UnknownHostException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,21 +24,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.blackparty.syntones.core.ArtistWordBankProcess;
+import com.blackparty.syntones.core.ArtistIDFProcess;
 import com.blackparty.syntones.core.ID3Extractor;
 import com.blackparty.syntones.core.LyricsExtractor;
-import com.blackparty.syntones.core.SongWordBankProcess;
+import com.blackparty.syntones.core.SongIDFProcess;
 import com.blackparty.syntones.core.Summarize;
 import com.blackparty.syntones.core.Tagger;
 import com.blackparty.syntones.core.TrackSearcher;
 import com.blackparty.syntones.model.Artist;
+import com.blackparty.syntones.model.ArtistWordBank;
+import com.blackparty.syntones.model.IDFReturn;
 import com.blackparty.syntones.model.Song;
 import com.blackparty.syntones.model.SongLine;
 import com.blackparty.syntones.model.SongWordBank;
 import com.blackparty.syntones.model.Tag;
 import com.blackparty.syntones.model.TagSong;
 import com.blackparty.syntones.model.TagSynonym;
-import com.blackparty.syntones.model.TemporaryModel;
 import com.blackparty.syntones.service.ArtistService;
 import com.blackparty.syntones.service.ArtistWordBankService;
 import com.blackparty.syntones.service.PlayedSongsService;
@@ -63,11 +68,9 @@ public class AddSongController {
 	@Autowired
 	private SongService songService;
 	@Autowired
-	ArtistWordBankService aservice;
-	@Autowired
-	SongWordBankService sservice;
-	@Autowired
 	private TagService tagService;
+	@Autowired SongWordBankService swService;
+	@Autowired ArtistWordBankService awService;
 
 	@RequestMapping(value = "/fetchLyrics")
 	public ModelAndView fetchLyrics(@RequestParam("songTitle") String songTitle,
@@ -139,11 +142,16 @@ public class AddSongController {
 				mav.addObject("songTitle", songTitle);
 				mav.addObject("err_message", "An error occured, click \"save\" ");
 			}
-		} catch (Exception e) {
+		}
+		catch (UnknownHostException e) {
 			e.printStackTrace();
-			mav.addObject("err_message", "Exception occured.");
-			mav.setViewName("askDetails");
-			return mav;
+			mav.addObject("err_message", "Exception occured.\nPlease enter song lyrics manually.");
+			mav.setViewName("showLyrics");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			mav.addObject("err_message", "Exception occured.\nPlease enter song lyrics manually.");
+			mav.setViewName("showLyrics");
 		}
 		return mav;
 	}
@@ -167,7 +175,14 @@ public class AddSongController {
 			song.setLyrics(lyrics);
 			song.setFlag(true);
 		}else{
+			ArrayList<String> lyrics1 = new ArrayList();
 			song.setFlag(false);
+			String lyrics_input = request.getParameter("lyrics");
+			String[] temp = lyrics_input.split("\n");
+			for(String str : temp){
+				lyrics1.add(str);
+			}
+			song.setLyrics(lyrics1);
 		}
 		song.setFile((File) request.getSession().getAttribute("file"));
 		System.out.print("Saving song to the server...");
@@ -177,10 +192,25 @@ public class AddSongController {
 			long songId = ss.addSong(song);
 			song.setSongId(songId);
 		
-			//word bank process
+		//word bank process
 			List<Song> songs = ss.getAllSongs();
+			int songCount = ss.songCount();
+			int artistCount = as.artistCount();
 			List<Artist> artists = as.getAllArtists();
 			if (!songs.isEmpty() && !artists.isEmpty()) {
+				SongIDFProcess sip = new SongIDFProcess();
+				IDFReturn ir = sip.SongIdfProcess(songs, songCount);
+				
+				ArtistIDFProcess aip = new ArtistIDFProcess();
+				IDFReturn irArtist = aip.ArtistIdfProcess(artists, artistCount);
+				
+				awService.updateWordBank(irArtist.getAwb());
+				as.updateBatchAllArtist(irArtist.getArtists());
+				
+				swService.updateWordBank(ir.getSwb());				
+				ss.updateBatchAllSongs(ir.getSongs());
+			}
+			/*			if (!songs.isEmpty() && !artists.isEmpty()) {
 				SongWordBankProcess swb = new SongWordBankProcess();
 				TemporaryModel tm = swb.WBSongProcess((ArrayList<Song>) songs);
 				songs = tm.getSongs();
@@ -225,7 +255,7 @@ public class AddSongController {
 			}
 			// save
 			tagSongService.saveBatchTagSong(tagSong);
-
+*/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -291,10 +321,13 @@ public class AddSongController {
 			System.out.println("Attempting to get lyrics to the internet had failed.");
 			mav.addObject("system_message", "Attempting to get lyrics to the internet had failed.");
 			mav.setViewName("askDetails");
-		} 
-		
+		}catch(UnknownHostException e){
+			e.printStackTrace();
+			mav.setViewName("askDetails");
+		}
 		catch (Exception e) {
 			e.printStackTrace();
+			mav.setViewName("askDetails");
 		}
 		return mav;
 	}
@@ -333,7 +366,7 @@ public class AddSongController {
 		ModelAndView mav = new ModelAndView("index");
 		try{
 			//word bank process
-			List<Song> songs = ss.getAllSongs();
+	/*		List<Song> songs = ss.getAllSongs();
 			if (!songs.isEmpty()) {
 				SongWordBankProcess swb = new SongWordBankProcess();
 				TemporaryModel tm = swb.WBSongProcess((ArrayList<Song>) songs);
@@ -343,7 +376,7 @@ public class AddSongController {
 				ss.updateBatchAllSongs(songs);
 				sservice.updateWordBank(words);
 			}
-			
+			*/
 
 		} catch (Exception e) {
 			e.printStackTrace();

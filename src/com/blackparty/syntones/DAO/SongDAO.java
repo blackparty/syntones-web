@@ -1,12 +1,8 @@
 package com.blackparty.syntones.DAO;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 
-import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -59,6 +55,7 @@ public class SongDAO {
 	public List<Song> getAllSongsFromDb(){
 		Session session = sf.openSession();
 		Query query = session.createQuery("from Song");
+		session.close();
 		return query.list();
 	}
 
@@ -91,6 +88,7 @@ public class SongDAO {
 		Query query = session.createQuery("from Song");
 		@SuppressWarnings("unchecked")
 		ArrayList<Song> songs = (ArrayList<Song>) query.list();
+		session.close();
 		return songs;
 
 	}
@@ -115,6 +113,7 @@ public class SongDAO {
 			Song song = (Song) query.uniqueResult();
 			songs.add(song);
 		}
+		session.close();
 		return songs;
 	}
 	
@@ -140,9 +139,10 @@ public class SongDAO {
 		return songs;
 	}
 	
-	public long songCount(){
+	public int songCount(){
 		Session session = sf.openSession();
-		long count = ((Long) session.createQuery("select count(*) from Song").uniqueResult()).intValue();
+		int count = ((Long) session.createQuery("select count(*) from Song").uniqueResult()).intValue();
+		session.close();
 		return count;
 	}
 	

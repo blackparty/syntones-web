@@ -21,10 +21,9 @@ public class Artist {
 	
 	@Column(name="artist_name")
 	private String artistName;
-	
-	@Column(name="vector_space" , columnDefinition = "text")
-	private String vectorSpace;
 
+	@Column(name="step5_tfidf")
+	private float step5Tfidf;
 
 	public Artist() {
 		super();
@@ -52,12 +51,12 @@ public class Artist {
 		this.artistName = artistName;
 	}
 	
-	public String getVectorSpace() {
-		return vectorSpace;
+	public float getStep5Tfidf() {
+		return step5Tfidf;
 	}
 
-	public void setVectorSpace(String vectorSpace) {
-		this.vectorSpace = vectorSpace;
+	public void setStep5Tfidf(float step5Tfidf) {
+		this.step5Tfidf = step5Tfidf;
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.HttpStatusException;
+import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,13 +22,16 @@ public class LyricsExtractor {
         this.songLyricsURL = mySongLyricsURL;
     }
     
-    public List<String> getSongLyrics( String band, String songTitle) throws IOException,HttpStatusException {
+    public List<String> getSongLyrics( String band, String songTitle) throws IOException {
      List<String> lyrics= new ArrayList<String>();
-    
-     System.setProperty("http.proxyHost", "192.168.70.61"); //127.0.0.1
-     System.setProperty("http.proxyPort", "3128"); //8182
+     //System.setProperty("http.proxyHost", "127.0.0.1"); //127.0.0.1
+    // System.setProperty("http.proxyPort", "8182"); //8182
      
-     Document doc = Jsoup.connect(songLyricsURL+ "/"+band.replace(" ", "-").toLowerCase()+"/"+songTitle.replace(" ", "-").toLowerCase()+"-lyrics/").userAgent("Chrome").timeout(10*1000).get();
+  //   Document doc = Jsoup.connect(songLyricsURL+ "/"+band.replace(" ", "-").toLowerCase()+"/"+songTitle.replace(" ", "-").toLowerCase()+"-lyrics/").userAgent("Chrome").get();
+     Response response= Jsoup.connect(songLyricsURL+ "/"+band.replace(" ", "-").toLowerCase()+"/"+songTitle.replace(" ", "-").toLowerCase()+"-lyrics/").userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0").referrer("http://www.google.com").timeout(12000) 
+             .followRedirects(true)
+             .execute();
+     Document doc = response.parse();
      String title = doc.title();
      System.out.println(title);
      Element p = doc.select("p.songLyricsV14").get(0);   

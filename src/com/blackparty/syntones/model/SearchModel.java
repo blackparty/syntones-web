@@ -2,9 +2,7 @@ package com.blackparty.syntones.model;
 
 public class SearchModel {
 	private long id;
-	private int[] vector;
-	private float cos_angle;
-	private float degrees;
+	private float degree;
 	
 	public SearchModel(){
 		
@@ -18,28 +16,16 @@ public class SearchModel {
 		this.id = id;
 	}
 
-	public int[] getVector() {
-		return vector;
+	public float getDegree() {
+		return degree;
 	}
 
-	public void setVector(int[] vector) {
-		this.vector = vector;
+	public void setDegree(float degree) {
+		this.degree = degree;
 	}
 
-	public float getCos_angle() {
-		return cos_angle;
-	}
 
-	public void setCos_angle(float cos_angle) {
-		this.cos_angle = cos_angle;
-	}
+	
 
-	public float getDegrees() {
-		return degrees;
-	}
-
-	public void setDegrees(float degrees) {
-		this.degrees = degrees;
-	}
 	
 }

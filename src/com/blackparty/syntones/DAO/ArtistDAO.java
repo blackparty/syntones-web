@@ -5,6 +5,7 @@ package com.blackparty.syntones.DAO;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackparty.syntones.model.Artist;
 import com.blackparty.syntones.model.SearchModel;
+import com.blackparty.syntones.model.Song;
 
 @Repository
 @Transactional
@@ -85,6 +87,14 @@ public class ArtistDAO {
 			Artist artist = (Artist) query.uniqueResult();
 			artists.add(artist);
 		}
+		session.close();
 		return artists;
 	}
+	public int artistCount(){
+		Session session = sf.openSession();
+		int count = ((Long) session.createQuery("select count(*) from Artist").uniqueResult()).intValue();
+		session.close();
+		return count;
+	}
+	
 }

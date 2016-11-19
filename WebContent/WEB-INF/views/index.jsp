@@ -85,7 +85,7 @@
 						 -->
 						<form class="form-inline" action="search" method="post">
 							<div class="form-group">
-								<input type="text" class="text"
+								<input type="text" class="form-control text"
 									name="input" placeholder="Search">
 
 								<button type="submit" class="btn btn-default">Search</button>
@@ -136,8 +136,8 @@
     </li>
    -->
 							<c:choose>
-								<c:when test="${not empty flag}">
-								p
+								<c:when test="${size == 0}">
+								--
 								</c:when>
 								<c:otherwise>
 									<c:forEach var="i" begin="0" end="${size-1}">

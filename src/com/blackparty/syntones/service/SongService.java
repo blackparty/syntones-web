@@ -3,9 +3,6 @@
 
 
 import java.util.ArrayList;
-import java.io.File;
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +57,7 @@ public class SongService {
 		return songDao.displaySong(firstResult);
 	}
 	
-	public long songCount(){
+	public int songCount(){
 		return songDao.songCount();
 	}
 	public List<Song> getSongbyArtist(List<Artist> artists){

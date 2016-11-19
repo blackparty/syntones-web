@@ -1,161 +1,298 @@
 package com.blackparty.syntones.core;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackparty.syntones.model.Artist;
+import com.blackparty.syntones.model.ArtistWordBank;
+import com.blackparty.syntones.model.IdfModel;
 import com.blackparty.syntones.model.SearchModel;
 import com.blackparty.syntones.model.SearchResultModel;
 import com.blackparty.syntones.model.Song;
+import com.blackparty.syntones.model.SongWordBank;
+import com.blackparty.syntones.service.ArtistWordBankService;
+import com.blackparty.syntones.service.SongWordBankService;
 
 public class SearchProcess {
-	public SearchResultModel SearchProcess(String searchWord, List<String> artist_wb,
-			List<String> song_wb, List<Song> songs,
-			List<Artist> artists) {
-		ArrayList<String> paths = new ArrayList<String>();
-		ArrayList<String> vectors;
-		ArrayList<String> vector_path;
-		ArrayList<SearchModel> smodel = new ArrayList<SearchModel>();
-		ArrayList<SearchModel> amodel =  new ArrayList<SearchModel>();;
-		ArrayList<SearchModel> sresult =  new ArrayList<SearchModel>();;
-		ArrayList<SearchModel> aresult =  new ArrayList<SearchModel>();;
-		float vSearch, absV, absSearch, cos_angle, radians, degree;
-		int document_count_song = 0, document_count_artist, token_count_artist, token_count_song;
-		float[] idf_song, idf_artist, step4_matrix_song, step4_matrix_artist = null;
-		float[][] step3_matrix_song, step3_matrix_artist = null;
-		int[] vector_arr_song = null;
-		int[] vector_arr_artist = null;
 
+	public static String delimeter = "  ' \n`~!@#$ %^&*()-_=+[]\\{}|;:\",./<>?";
+	public static Stemmer stem = new Stemmer();
+	
+
+	public SearchResultModel searchProcess(String searchWord,
+			List<SongWordBank> swbs, List<Song> songs, List<Artist> artists,
+			List<ArtistWordBank> awbs) throws Exception {
+		ArrayList<SearchModel> smSong = new ArrayList<SearchModel>();
+		ArrayList<SearchModel> smArtist = new ArrayList<SearchModel>();
 		SearchResultModel result = new SearchResultModel();
+		ArrayList<IdfModel> smodel = new ArrayList<IdfModel>();
 		System.out.println("word entered >>>" + searchWord);
+		ArrayList<SongWordBank> tempSwbs = new ArrayList<SongWordBank>();
+		ArrayList<ArtistWordBank> tempAwbs = new ArrayList<ArtistWordBank>();
 		
-		// song;
-		document_count_song = songs.size();
-		System.out.println("song size" + document_count_song);
-		token_count_song = song_wb.size();
-		vector_arr_song = getQueryWord(searchWord, song_wb);
-		smodel = (ArrayList<SearchModel>) toMatrixList((ArrayList<Song>) songs,null,"song");
-		idf_song = getIDF(smodel, document_count_song);
-		step3_matrix_song = step3(idf_song, smodel, document_count_song,
-				token_count_song);
-		step4_matrix_song = step4(vector_arr_song, idf_song);
-
-		for (int i = 0; i < step3_matrix_song.length; i++) {
-			vSearch = SumProduct(step3_matrix_song[i], step4_matrix_song);
-			absV = (float) Math.sqrt(SumProduct(step3_matrix_song[i],
-					step3_matrix_song[i]));
-			absSearch = (float) Math.sqrt(SumProduct(step4_matrix_song,
-					step4_matrix_song));
-			cos_angle = (float) vSearch / (absV * absSearch);
-			radians = (float) Math.acos(cos_angle);
-			degree = (float) Math.toDegrees(radians);
-			smodel.get(i).setCos_angle(cos_angle);
-			smodel.get(i).setDegrees(degree);
-		}
-		int countNAN = 0;
-		for (int i = 0; i < smodel.size(); i++) {
-			if (Double.isNaN(smodel.get(i).getDegrees())) {
-				countNAN++;
+		StringTokenizer str = new StringTokenizer(searchWord, delimeter);
+		while (str.hasMoreTokens()) {
+			String token = str.nextToken().trim();
+			if (!token.equalsIgnoreCase("")) {
+				String baseform = stem.stem(token).trim();
+				if (!isStopWord(baseform)) {
+					if (!baseform.equalsIgnoreCase(null)) {
+						if (smodel.isEmpty()) {
+							IdfModel im = new IdfModel();
+							im.setTerm(baseform);
+							im.setCount(1);
+							smodel.add(im);
+						} else {
+							if (!checkModelList(baseform, smodel)) {
+								IdfModel im = new IdfModel();
+								im.setTerm(baseform);
+								im.setCount(1);
+								im.setSoaId(0);
+								smodel.add(im);
+							} else {
+								for (IdfModel im : smodel) {
+									if (im.getTerm().equalsIgnoreCase(baseform)) {
+										im.setCount(im.getCount() + 1);
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
-		if (countNAN >= smodel.size()) {
+
+		/*
+		 * Song
+		 */
+		for (SongWordBank swb : swbs) {
+			if (songs.get(0).getSongId() == swb.getSongId()) {
+				tempSwbs.add(swb);
+			}
+		}
+		int[] queryTF = new int[tempSwbs.size()];
+		for (int i = 0; i < queryTF.length; i++) {
+			queryTF[i] = 0;
+		}
+		int index = 0;
+		for (SongWordBank swb : tempSwbs) {
+			for (IdfModel idfmodel : smodel) {
+				if (swb.getWord().equalsIgnoreCase(idfmodel.getTerm())) {
+					queryTF[index] = idfmodel.getCount();
+				}
+			}
+			index++;
+		}
+		System.out.println("step4 result");
+		int flagSong = 0;
+		float[] step4Song = getStep4Song(queryTF, tempSwbs);
+		for (int i = 0; i < step4Song.length; i++) {
+			System.out.println(step4Song[i]);
+			if(step4Song[i] == 0f){
+				flagSong+=1;
+			}
+		}
+
+		float step5QuerySong = getQueryStep5(step4Song);
+		System.out.println("step5 result >> " + step5QuerySong);
+		int countNAN=0;
+		for (int i = 0; i < songs.size(); i++) {
+			float step3[] = new float[tempSwbs.size()];
+			index = 0;
+			for (SongWordBank swb : swbs) {
+				if (swb.getSongId() == songs.get(i).getSongId()) {
+					step3[index] = (float) swb.getStep3();
+					index++;
+				}
+			}
+			float vSearch = SumProduct(step3, step4Song);
+			float absV = (float) Math.sqrt(SumProduct(step3, step3));
+			float absSearch = (float) songs.get(i).getStep5Tfidf();
+			float cos_angle = (float) vSearch / (absV * absSearch);
+			float radians = (float) Math.acos(cos_angle);
+			float degree = (float) Math.toDegrees(radians);
+
+			SearchModel sm = new SearchModel();
+			sm.setId(songs.get(i).getSongId());
+			sm.setDegree(degree);
+			if (Double.isNaN(degree)) {
+				countNAN++;
+			}else{
+				smSong.add(sm);
+			}
+		}
+		if (countNAN >= smSong.size()) {
 			System.out.println(searchWord + " not found.");
-			result.setSongNan(true);
 		} else {
-			Collections.sort(smodel, new Comparator<SearchModel>() {
+			Collections.sort(smSong, new Comparator<SearchModel>() {
+
 				@Override
 				public int compare(SearchModel am1, SearchModel am2) {
-					if (am1.getDegrees() > am2.getDegrees()) {
+					if (am1.getDegree() > am2.getDegree()) {
 						return 1;
-					} else if (am1.getDegrees() < am2.getDegrees()) {
+					} else if (am1.getDegree() < am2.getDegree()) {
 						return -1;
 					} else {
 						return 0;
 					}
 				}
 			});
-			System.out.println("\n\n === RESULTS ====");
-			for (int i = 0; i < smodel.size(); i++) {
-				if (smodel.get(i).getDegrees() < 80.0) {
-					sresult.add(smodel.get(i));
-					System.out.println("SongID : " + smodel.get(i).getId()
-							+ "    Degrees :" + smodel.get(i).getDegrees());
-				}else{
-					smodel.remove(i);
+		}
+		/*
+		 * Artist
+		 * 
+		 */
+
+		for (ArtistWordBank swb : awbs) {
+			if (artists.get(0).getArtistId() == swb.getArtistId()) {
+				tempAwbs.add(swb);
+			}
+		}
+		int[] queryTFArtist = new int[tempAwbs.size()];
+		
+		index = 0;
+		for (ArtistWordBank awb : tempAwbs) {
+			for (IdfModel idfmodel : smodel) {
+				if (awb.getWord().equalsIgnoreCase(idfmodel.getTerm())) {
+					queryTFArtist[index] = idfmodel.getCount();
 				}
 			}
-
+			index++;
 		}
-
-		
-		
-		// artist
-		document_count_artist = artists.size();
-		System.out.println("artist size" + document_count_artist);
-		token_count_artist = artist_wb.size();
-		vector_arr_artist = getQueryWord(searchWord, artist_wb);
-		amodel = (ArrayList<SearchModel>) toMatrixList(null,artists,"artists");
-		idf_artist = getIDF(amodel, document_count_artist);
-		System.out.println("artist word bank size" + token_count_artist);
-		
-		step3_matrix_artist = step3(idf_artist, amodel, document_count_artist,
-				artist_wb.size());
-		step4_matrix_artist = step4(vector_arr_artist, idf_artist);
-
-		for (int i = 0; i < step3_matrix_artist.length; i++) {
-			vSearch = SumProduct(step3_matrix_artist[i], step4_matrix_artist);
-			absV = (float) Math.sqrt(SumProduct(step3_matrix_artist[i],
-					step3_matrix_artist[i]));
-			absSearch = (float) Math.sqrt(SumProduct(step4_matrix_artist,
-					step4_matrix_artist));
-			cos_angle = (float) vSearch / (absV * absSearch);
-			radians = (float) Math.acos(cos_angle);
-			degree = (float) Math.toDegrees(radians);
-			amodel.get(i).setCos_angle(cos_angle);
-			amodel.get(i).setDegrees(degree);
-		}
-		
-		countNAN = 0;
-		for (int i = 0; i < amodel.size(); i++) {
-			if (Double.isNaN(amodel.get(i).getDegrees())) {
-				countNAN++;
+		System.out.println("step4 result");
+		int flagArtist = 0;
+		float[] step4Artist = getStep4Artist(queryTFArtist, tempAwbs);
+		for (int i = 0; i < step4Artist.length; i++) {
+			System.out.println(step4Artist[i]);
+			if(step4Artist[i] == 0f){
+				flagArtist +=1;
 			}
 		}
-		if (countNAN >=amodel.size()) {
+
+		float step5QueryArtist = getQueryStep5(step4Artist);
+		System.out.println("step5 result >> " + step5QueryArtist);
+		
+		countNAN=0;
+		for (int i = 0; i < artists.size(); i++) {
+			float step3[] = new float[tempAwbs.size()];
+			index = 0;
+			for (ArtistWordBank swb : awbs) {
+				if (swb.getArtistId() == artists.get(i).getArtistId()) {
+					step3[index] = (float) swb.getStep3();
+					index++;
+				}
+			}
+			float vSearch = SumProduct(step3, step4Artist);
+			float absV = (float) Math.sqrt(SumProduct(step3, step3));
+			float absSearch = (float) songs.get(i).getStep5Tfidf();
+			float cos_angle = (float) vSearch / (absV * absSearch);
+			float radians = (float) Math.acos(cos_angle);
+			float degree = (float) Math.toDegrees(radians);
+
+			SearchModel sm = new SearchModel();
+			sm.setId(artists.get(i).getArtistId());
+			sm.setDegree(degree);
+			if (Double.isNaN(degree)) {
+				countNAN++;
+			}else{
+				smArtist.add(sm);
+			}
+		}
+		if (countNAN >= smArtist.size()) {
 			System.out.println(searchWord + " not found.");
-			result.setArtistNan(true);
 		} else {
-			Collections.sort(amodel, new Comparator<SearchModel>() {
+			Collections.sort(smArtist, new Comparator<SearchModel>() {
+
 				@Override
 				public int compare(SearchModel am1, SearchModel am2) {
-					if (am1.getDegrees() > am2.getDegrees()) {
+					if (am1.getDegree() > am2.getDegree()) {
 						return 1;
-					} else if (am1.getDegrees() < am2.getDegrees()) {
+					} else if (am1.getDegree() < am2.getDegree()) {
 						return -1;
 					} else {
 						return 0;
 					}
 				}
 			});
-			System.out.println("\n\n === RESULTS ====");
-			for (int i = 0; i < amodel.size(); i++) {
-				if (amodel.get(i).getDegrees() < 90.0) {
-					aresult.add(amodel.get(i));
-					System.out.println("ArtistID : " + amodel.get(i).getId()
-							+ "    Degrees :" + amodel.get(i).getDegrees());
-				}
-			}
-
 		}
-		
-		result.setSongs(sresult);
-		result.setArtists(aresult);
-		
+		if(flagSong >= step4Song.length){
+			smSong.removeAll(smSong);
+		}
+		if(flagArtist >= step4Artist.length){
+			smArtist.removeAll(smArtist);
+		}
+		result.setSongs(smSong);
+		result.setArtists(smArtist);
 		return result;
 	}
 
+	private boolean isStopWord(String word) {
+		String[] string = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z"
+				.split(" ");
+		String[] stpWords = { "a", "an", "as", "are", "is", "was",
+			"were", "as", "at", "be", "by", "for", "from", "in", "on", "to",
+			"this", "the", "that", "will", "with", "or", "nor", "whether",
+			"neither", "and" };
+		
+		for (String token : stpWords) {
+			if (word.equalsIgnoreCase(token)) {
+				return true;
+			}
+		}
+		for (String token : string) {
+			if (word.equalsIgnoreCase(token)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean checkModelList(String word, ArrayList<IdfModel> model_list) {
+		for (int x = 0; x < model_list.size(); x++) {
+			if (word.equalsIgnoreCase(model_list.get(x).getTerm())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private float[] getStep4Song(int[] queryTF, List<SongWordBank> swbs) {
+		float[] step4Result = new float[queryTF.length];
+
+		for (int i = 0; i < queryTF.length; i++) {
+			step4Result[i] = ((float) queryTF[i] / (float) swbs.get(i)
+					.getMaxCount()) * (float) swbs.get(i).getIdf();
+		}
+		return step4Result;
+	}
+
+	private float[] getStep4Artist(int[] queryTF, List<ArtistWordBank> awbs) {
+		float[] step4Result = new float[queryTF.length];
+
+		for (int i = 0; i < queryTF.length; i++) {
+			step4Result[i] = ((float) queryTF[i] / (float) awbs.get(i)
+					.getMaxCount()) * (float) awbs.get(i).getIdf();
+		}
+		return step4Result;
+	}
+
+	private float getQueryStep5(float[] step4Result) {
+		float step5Result = 0f, temp = 0f;
+
+		for (int i = 0; i < step4Result.length; i++) {
+			temp += (float) Math.pow(step4Result[i], 2);
+		}
+		step5Result = (float) Math.sqrt(temp);
+
+		return step5Result;
+	}
 	public static float SumProduct(float[] array1, float[] array2) {
 		float sum = 0, product;
 		for (int i = 0; i < array1.length; i++) {
@@ -164,156 +301,4 @@ public class SearchProcess {
 		}
 		return sum;
 	}
-
-	public static int[] getQueryWord(String search_word,
-			List<String> word_bank) {
-		String[] words = search_word.split(" ");
-		int[] vector_arr = new int[word_bank.size()];
-		for (int i = 0; i < vector_arr.length; i++) {
-			vector_arr[i] = 0;
-		}
-		for (int i = 0; i < word_bank.size(); i++) {
-			for (int j = 0; j < words.length; j++) {
-				if (word_bank.get(i).trim().equalsIgnoreCase(words[j])) {
-					if (word_bank.get(i).trim().equalsIgnoreCase(words[j])) {
-						System.out.println("hey!!!!");
-						vector_arr[i] = vector_arr[i] + 1;
-					} else {
-						// System.out.println(word_bank.get(i) + " = " +
-						// words[j]);
-						vector_arr[i] = vector_arr[i] + 1;
-						// System.out.println("va = " + vector_arr[i]);
-					}
-				}
-			}
-		}
-		return vector_arr;
-	}
-
-	public static boolean checkWordBank(String word, List<String> word_bank) {
-		for (int x = 0; x < word_bank.size(); x++) {
-			if (word.equalsIgnoreCase(word_bank.get(x))) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static int getMax(int[] inputArray) {
-		int maxValue = inputArray[0];
-		for (int i = 1; i < inputArray.length; i++) {
-			if (inputArray[i] > maxValue) {
-				maxValue = inputArray[i];
-			}
-		}
-		return maxValue;
-	}
-
-	public static float[] step4(int[] vector_arr, float[] idf) {
-		float[] tf_idf = new float[vector_arr.length];
-		for (int i = 0; i < vector_arr.length; i++) {
-			// System.out.println(vector_arr[i] +" / "+getMax(vector_arr)+
-			// " * "+idf[i]);
-			float temp = ((float) vector_arr[i] / (float) getMax(vector_arr))
-					* (float) idf[i];
-			// if (!Double.isNaN(temp)) {
-			tf_idf[i] = temp;
-			// } else {
-			// tf_idf[i] = (float) 0.0;
-			// }
-		}
-		System.out.println("step 4 na ta!");
-		for (int i = 0; i < tf_idf.length; i++) {
-			System.out.print(tf_idf[i] + "  ");
-		}
-		return tf_idf;
-	}
-
-	public float[][] step3(float[] idf, List<SearchModel> array_model,
-			int docuCount, int token_count) {
-		System.out.println("Step 3!");
-		System.out.println("artist word bank size" + token_count);
-		int[][] matrix = new int[docuCount][];
-		for (int i = 0; i < docuCount; i++) {
-			matrix[i] = array_model.get(i).getVector();
-		}
-		float[][] step3_matrix = new float[docuCount][token_count];
-		for (int i = 0; i < docuCount; i++) {
-			for (int j = 0; j < token_count; j++) {
-				float temp = (float) matrix[i][j] * (float) idf[j];
-				if (!Double.isNaN(temp)) {
-					step3_matrix[i][j] = temp;
-				} else {
-					step3_matrix[i][j] = (float) 0.0;
-				}
-			}
-		}
-
-		// for (int i = 0; i < docuCount; i++) {
-		// System.out.println("tf-idf : ");
-		// for (int j = 0; j < token_count; j++) {
-		// System.out.print("  " + step3_matrix[i][j]);
-		// }
-		// System.out.println("");
-		// }
-		return step3_matrix;
-	}
-
-	public float[] getIDF(List<SearchModel> array_model, int docuCount) {
-
-		int[][] matrix = new int[docuCount][];
-		for (int i = 0; i < array_model.size(); i++) {
-			matrix[i] = array_model.get(i).getVector();
-		}
-		float[] idf = new float[matrix[0].length];
-		for (int i = 0; i < matrix[0].length; i++) {
-			int sum = 0;
-			for (int j = 0; j < matrix.length; j++) {
-				sum += matrix[j][i];
-			}
-			idf[i] = (float) log2((double) matrix.length / (double) sum);
-		}
-		return idf;
-	}
-
-	public double log2(double x) {
-		return Math.log(x) / Math.log(2.0d);
-	}
-
-	public List<SearchModel> toMatrixList(ArrayList<Song> songs,
-			List<Artist> artists, String str) {
-		System.out.println("to matrix >> ");
-		ArrayList<SearchModel> array_model = new ArrayList<SearchModel>();
-		if (str.equalsIgnoreCase("song")) {
-			for (int i = 0; i < songs.size(); i++) {
-				int[] array = getArray(songs.get(i).getVectorSpace());
-				SearchModel obj = new SearchModel();
-				obj.setVector(array);
-				obj.setId(songs.get(i).getSongId());
-				array_model.add(obj);
-			}
-			return array_model;
-		} 
-		if(str.equalsIgnoreCase("artists")) {
-			for (int i = 0; i < artists.size(); i++) {
-				int[] array = getArray(artists.get(i).getVectorSpace());
-				SearchModel obj = new SearchModel();
-				obj.setVector(array);
-				obj.setId(artists.get(i).getArtistId());
-				array_model.add(obj);
-			}
-			return array_model;
-		}
-		return null;
-	}
-
-	public int[] getArray(String aString) {
-		String[] vString = aString.split(" ");
-		int[] vector = new int[vString.length];
-		for (int i = 0; i < vString.length; i++) {
-			vector[i] = Integer.parseInt(vString[i]);
-		}
-		return vector;
-	}
-
 }

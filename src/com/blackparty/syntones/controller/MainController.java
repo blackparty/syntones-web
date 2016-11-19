@@ -20,9 +20,11 @@ import com.blackparty.syntones.core.MediaResource;
 import com.blackparty.syntones.core.SearchProcess;
 import com.blackparty.syntones.core.Tagger;
 import com.blackparty.syntones.model.Artist;
+import com.blackparty.syntones.model.ArtistWordBank;
 import com.blackparty.syntones.model.Message;
 import com.blackparty.syntones.model.SearchResultModel;
 import com.blackparty.syntones.model.Song;
+import com.blackparty.syntones.model.SongWordBank;
 import com.blackparty.syntones.model.Tag;
 import com.blackparty.syntones.model.TagSong;
 import com.blackparty.syntones.model.TagSynonym;
@@ -59,10 +61,11 @@ public class MainController {
 	private UserService userService;
 	@Autowired
 	private ArtistService artistService;
+
 	@Autowired
-	private SongWordBankService sbservice;
+	SongWordBankService swService;
 	@Autowired
-	private ArtistWordBankService abservice;
+	ArtistWordBankService awService;
 
 	@RequestMapping(value = "/tagSongs")
 	public ModelAndView tagSongs() {
@@ -289,36 +292,51 @@ public class MainController {
 
 	}
 
-	@RequestMapping(value="/search", method= RequestMethod.POST)
+	@RequestMapping(value = "/search", method = RequestMethod.POST)
 	public ModelAndView searchAdmin(@RequestParam("input") String searchString,
 			HttpServletRequest request, HttpSession session) throws Exception {
 		ModelAndView mav = new ModelAndView();
 		SearchProcess sp = new SearchProcess();
-		SearchResultModel searchResult = sp.SearchProcess(searchString.trim(),
-				abservice.fetchAllWordBank(), sbservice.fetchAllWordBank(),
-				songService.getAllSongs(), artistService.getAllArtists());
+		List<Song> songs = songService.getAllSongs();
+		List<SongWordBank> swbs = swService.fetchAllWordBank();
+		List<Artist> artists = artistService.getAllArtists();
+		List<ArtistWordBank> awbs = awService.fetchAllWordBank();
+		// Song
+		System.out.println("SEARCH");
+		System.out.println(songs.get(0).getSongTitle() + " >> "
+				+ songs.get(0).getSongId());
 
-		List<Song> songs = songService.getSongs(searchResult.getSongs());
-		List<Artist> artists = artistService.getArtists(searchResult
-				.getArtists());
+		SearchResultModel searchResult = sp.searchProcess(searchString, swbs,
+				songs, artists, awbs);
+		songs = songService.getSongs(searchResult.getSongs());
+		artists = artistService.getArtists(searchResult.getArtists());
+
+		// SearchResultModel searchResult =
+		// sp.SearchProcess(searchString.trim(), abservice.fetchAllWordBank(),
+		// sbservice.fetchAllWordBank(), songService.getAllSongs(),
+		// artistService.getAllArtists());
+		// List<Song> songs = songService.getSongs(searchResult.getSongs());
+		// List<Artist> artists =
+		// artistService.getArtists(searchResult.getArtists());
+
 		ArrayList<Song> sprio = new ArrayList<Song>();
 		ArrayList<Song> lprio = new ArrayList<Song>();
-		if(artists.isEmpty()){
-			if(songs.isEmpty()){
+		if (artists.isEmpty()) {
+			if (songs.isEmpty()) {
 				System.out.println("here");
-				mav.addObject("search_err", "empty");
-			}else{
+				mav.addObject("search_err", "Not Found");
+			} else {
 				mav.addObject("songList", songs);
 			}
-		}else if(songs.isEmpty()){
-			if(artists.isEmpty()){
+		} else if (songs.isEmpty()) {
+			if (artists.isEmpty()) {
 				System.out.println("here");
 				mav.addObject("search_err", "Not Found.");
-			}else{
+			} else {
 				songs = songService.getSongbyArtist(artists);
-				mav.addObject("songList", songs);		
+				mav.addObject("songList", songs);
 			}
-		}else{
+		} else {
 			for (Song song : songs) {
 				for (Artist artist : artists) {
 					if (song.getArtist().getArtistId() == artist.getArtistId()) {
@@ -331,6 +349,8 @@ public class MainController {
 			sprio.addAll(lprio);
 			mav.addObject("songList", sprio);
 		}
+
+		mav.addObject("songList", songs);
 		mav.setViewName("index");
 		mav.addObject("searchflag", "flag");
 		return mav;

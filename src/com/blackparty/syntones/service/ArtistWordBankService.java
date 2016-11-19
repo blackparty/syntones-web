@@ -1,6 +1,5 @@
 package com.blackparty.syntones.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +12,16 @@ import com.blackparty.syntones.model.ArtistWordBank;
 public class ArtistWordBankService {
 	@Autowired
 	private ArtistWordBankDAO awbDao;
-
-	public void updateWordBank(List<ArtistWordBank> words)
-			throws Exception {
+	
+	public void updateWordBank(List<ArtistWordBank> words) throws Exception{
 		awbDao.updateWordBank(words);
 	}
 	
-	public ArrayList<String> fetchAllWordBank() throws Exception{
+	public List<ArtistWordBank> fetchAllWordBank() throws Exception{
 		return awbDao.fetchAllWordBank();
+	}
+	public List<ArtistWordBank> fetchWordBank(long artistId) throws Exception{
+		return awbDao.fetchWordBank(artistId);
 		
 	}
-
 }

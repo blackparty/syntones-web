@@ -88,7 +88,7 @@
 							</div>
 							<div class="navbar-right form-group">
 								<input class="btn-primary btn 	" type="submit" name="action"
-									value="Add song" />
+									value="Save song" />
 								<a href="index"><input class="navbar-right btn-warning btn" type="button"value="Cancel"/></a>
 							</div>
 						</form>

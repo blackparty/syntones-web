@@ -1,6 +1,5 @@
 package com.blackparty.syntones.DAO;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -12,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackparty.syntones.model.ArtistWordBank;
 import com.blackparty.syntones.model.SongWordBank;
+
+
 
 @Repository
 @Transactional
@@ -28,20 +29,31 @@ public class ArtistWordBankDAO {
 		if (!words.isEmpty()) {
 			for (ArtistWordBank word : words) {
 				session.save(word);
-				session.flush();
 			}
 
+			session.flush();
 			session.close();
 		} else {
 			System.out.print("hoholo");
 		}
 	}
 	
-	public ArrayList<String> fetchAllWordBank() throws Exception{
+	public List<ArtistWordBank> fetchAllWordBank() throws Exception{
 		Session session = sf.openSession();
-		Query query = session.createQuery("select word from ArtistWordBank");
+		Query query = session.createQuery("from ArtistWordBank");
 		@SuppressWarnings("unchecked")
-		ArrayList<String> words = (ArrayList<String>) query.list();
+		List<ArtistWordBank> words = (List<ArtistWordBank>) query.list();
+		session.close();
+		return words;
+	}
+	
+	public List<ArtistWordBank> fetchWordBank(long artistId) throws Exception{
+		Session session = sf.openSession();
+		Query query = session.createQuery("from ArtistWordBank where artistId=:artistId");
+		query.setLong("artistId", artistId);
+		@SuppressWarnings("unchecked")
+		List<ArtistWordBank> words = (List<ArtistWordBank>) query.list();
+		session.close();
 		return words;
 	}
 }
